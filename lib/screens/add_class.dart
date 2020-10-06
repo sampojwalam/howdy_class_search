@@ -46,9 +46,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
             ),
           ),
           RaisedButton.icon(
-            onPressed: () {
-              print("works");
-            },
+            onPressed: () {},
             icon: Icon(
               Icons.add,
               color: Colors.white,

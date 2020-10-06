@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:howdy_class_search/widgets/class_card.dart';
 
 import './screens/add_class.dart';
 import './models/class.dart';
@@ -30,9 +33,27 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  var top = 0.0;
+
+  //Testing json -> class object conversion
+  Future<List<dynamic>> getJson(BuildContext ctx) async {
+    final classesJson =
+        await DefaultAssetBundle.of(ctx).loadString("assets/data/classes.json");
+    final classes = json.decode(classesJson);
+    return classes;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final classesList = getJson(context);
+    //Testing json -> class object conversion
+
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
@@ -44,58 +65,87 @@ class HomeScreen extends StatelessWidget {
         onPressed: () =>
             Navigator.of(context).pushNamed(AddClassScreen.routeName),
       ),
-      body: Column(
-        children: [
-          ClipPath(
-            clipper: MyClipper(),
-            child: Container(
-              height: 350,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Color(0xFF200000),
-                      Color(0xFF800000),
-                    ]),
-                image: DecorationImage(
-                    image: AssetImage("assets/images/tamu_logo.png")),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(children: [
-              Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(bottom: 30.0),
-                    height: 130.0,
-                    width: 15.0,
-                    decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30.0),
-                          bottomLeft: Radius.circular(30.0),
-                        )),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 350,
+            pinned: true,
+            flexibleSpace: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+              top = constraints.biggest.height;
+              return FlexibleSpaceBar(
+                title: Text(top > 150 ? "" : "Howdy Class Search"),
+                background: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
                   ),
-                  Expanded(
+                  child: ClipPath(
+                    clipper: MyClipper(),
                     child: Container(
-                      margin: EdgeInsets.only(bottom: 30.0),
-                      height: 130.0,
+                      height: 350,
+                      width: double.infinity,
                       decoration: BoxDecoration(
-                          color: Color(0xFFF9F1F1),
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(30.0),
-                            bottomRight: Radius.circular(30.0),
-                          )),
+                        gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Color(0xFF200000),
+                              Color(0xFF800000),
+                            ]),
+                        image: DecorationImage(
+                            image: AssetImage("assets/images/tamu_logo.png")),
+                      ),
                     ),
                   ),
-                ],
-              )
+                ),
+              );
+            }),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+
+                  //Testing json -> class object conversion
+                  child: FutureBuilder(
+                    future: classesList,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        List<Widget> classCards = [];
+                        for (var i = 0; i < snapshot.data.length; i++) {
+                          classCards.add(
+                            ClassCard(
+                              snapshot.data[i]["CRN"],
+                              snapshot.data[i]["Title"],
+                              snapshot.data[i]["Instructor"],
+                              snapshot.data[i]["Cap"],
+                              snapshot.data[i]["Rem"],
+                            ),
+                          );
+                        }
+                        return Column(children: classCards);
+                      } else {
+                        return Column(children: [
+                          SizedBox(height: 20),
+                          CircularProgressIndicator()
+                        ]);
+                      }
+                    },
+                  )
+
+                  // Column(
+                  //   children: [
+                  //     ClassCard(Colors.green),
+                  //     ClassCard(Colors.red),
+                  //     ClassCard(Colors.green),
+                  //     ClassCard(Colors.red),
+                  //     ClassCard(Colors.green),
+                  //     ClassCard(Colors.red),
+                  //   ],
+                  // ),
+                  )
             ]),
-          )
+          ),
         ],
       ),
     );
