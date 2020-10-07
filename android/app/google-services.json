@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "387502356837",
+    "firebase_url": "https://howdy-class-search.firebaseio.com",
+    "project_id": "howdy-class-search",
+    "storage_bucket": "howdy-class-search.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387502356837:android:fe6b6d8fc3e925fdc3c98c",
+        "android_client_info": {
+          "package_name": "com.example.howdy_class_search"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387502356837-rvhhbf5sg23namolilhq7hqmbrsfugk6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBP2iG8eAa5QKzcpy9QvoaqDRrNughTTjM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387502356837-rvhhbf5sg23namolilhq7hqmbrsfugk6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "387502356837-c0ichirj05s55m7fhijnidffl6uekdvg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.howdyClassSearch"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

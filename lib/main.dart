@@ -1,9 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:howdy_class_search/widgets/class_card.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
+import './widgets/class_card.dart';
 import './screens/add_class.dart';
+import './screens/auth_screen.dart';
 import './models/class.dart';
 
 void main() => runApp(MyApp());
@@ -24,7 +27,32 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: HomeScreen(),
+      home: FutureBuilder(
+        future: Firebase.initializeApp(),
+        builder: (context, snapshot) {
+          // Check for errors
+          if (snapshot.hasError) {
+            return null;
+          }
+
+          // Once complete, show your application
+          if (snapshot.connectionState == ConnectionState.done) {
+            return StreamBuilder(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  //token found
+                  return HomeScreen();
+                }
+                return AuthScreen();
+              },
+            );
+          }
+
+          // Otherwise, show something whilst waiting for initialization to complete
+          return null;
+        },
+      ),
       routes: {
         //key (route name) : value (builder)
         AddClassScreen.routeName: (ctx) => AddClassScreen(),
@@ -68,6 +96,13 @@ class _HomeScreenState extends State<HomeScreen> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            actions: [
+              IconButton(
+                  icon: Icon(Icons.exit_to_app),
+                  onPressed: () {
+                    FirebaseAuth.instance.signOut();
+                  })
+            ],
             expandedHeight: 350,
             pinned: true,
             flexibleSpace: LayoutBuilder(
@@ -104,46 +139,35 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverList(
             delegate: SliverChildListDelegate([
               Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
 
-                  //Testing json -> class object conversion
-                  child: FutureBuilder(
-                    future: classesList,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        List<Widget> classCards = [];
-                        for (var i = 0; i < snapshot.data.length; i++) {
-                          classCards.add(
-                            ClassCard(
-                              snapshot.data[i]["CRN"],
-                              snapshot.data[i]["Title"],
-                              snapshot.data[i]["Instructor"],
-                              snapshot.data[i]["Cap"],
-                              snapshot.data[i]["Rem"],
-                            ),
-                          );
-                        }
-                        return Column(children: classCards);
-                      } else {
-                        return Column(children: [
-                          SizedBox(height: 20),
-                          CircularProgressIndicator()
-                        ]);
+                //Testing json -> class object conversion
+                child: FutureBuilder(
+                  future: classesList,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<Widget> classCards = [];
+                      for (var i = 0; i < snapshot.data.length; i++) {
+                        classCards.add(
+                          ClassCard(
+                            snapshot.data[i]["CRN"],
+                            snapshot.data[i]["Title"],
+                            snapshot.data[i]["Instructor"],
+                            snapshot.data[i]["Cap"],
+                            snapshot.data[i]["Rem"],
+                          ),
+                        );
                       }
-                    },
-                  )
-
-                  // Column(
-                  //   children: [
-                  //     ClassCard(Colors.green),
-                  //     ClassCard(Colors.red),
-                  //     ClassCard(Colors.green),
-                  //     ClassCard(Colors.red),
-                  //     ClassCard(Colors.green),
-                  //     ClassCard(Colors.red),
-                  //   ],
-                  // ),
-                  )
+                      return Column(children: classCards);
+                    } else {
+                      return Column(children: [
+                        SizedBox(height: 20),
+                        CircularProgressIndicator()
+                      ]);
+                    }
+                  },
+                ),
+              )
             ]),
           ),
         ],
