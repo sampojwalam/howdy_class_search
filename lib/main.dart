@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Covid 19',
+      title: 'Howdy Class Search',
       theme: ThemeData(
         primaryColor: Color(0xFF500000),
         scaffoldBackgroundColor: Color(0xFFFEFEFE),
