@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -40,6 +42,7 @@ class MyApp extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   //token found
+                  HttpOverrides.global = new MyHttpOverrides();
                   return ClassesScreen();
                 }
                 return AuthScreen();
@@ -48,7 +51,8 @@ class MyApp extends StatelessWidget {
           }
 
           // Otherwise, show something whilst waiting for initialization to complete
-          return null;
+          print(snapshot.error);
+          return Container();
         },
       ),
       routes: {
@@ -56,5 +60,14 @@ class MyApp extends StatelessWidget {
         AddClassScreen.routeName: (ctx) => AddClassScreen(),
       },
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

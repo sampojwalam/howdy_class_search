@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
 
 class AddClassScreen extends StatefulWidget {
   static const routeName = '/add-class';
@@ -46,7 +50,18 @@ class _AddClassScreenState extends State<AddClassScreen> {
             ),
           ),
           RaisedButton.icon(
-            onPressed: () {},
+            onPressed: () async {
+              final crn = _crnController.text;
+              final uid = FirebaseAuth.instance.currentUser.uid;
+              const url = "https://cap1.herpin.net:5000/add";
+              print(uid);
+              print(crn);
+              final payload = jsonEncode({'crn': crn, 'uid': uid});
+              final response = await http.post(url,
+                  headers: {'Content-Type': 'application/json'}, body: payload);
+              print(response.body);
+              Navigator.of(context).pop();
+            },
             icon: Icon(
               Icons.add,
               color: Colors.white,

@@ -1,6 +1,9 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_client/http_client.dart';
 
 import '../widgets/class_card.dart';
 import '../screens/add_class.dart';
@@ -15,9 +18,12 @@ class _ClassesScreenState extends State<ClassesScreen> {
 
   //Testing json -> class object conversion
   Future<List<dynamic>> getJson(BuildContext ctx) async {
-    final classesJson =
-        await DefaultAssetBundle.of(ctx).loadString("assets/data/classes.json");
-    final classes = json.decode(classesJson);
+    //final classesJson = await DefaultAssetBundle.of(ctx).loadString("assets/data/classes.json");
+    final uid = FirebaseAuth.instance.currentUser.uid;
+
+    final url = "https://cap1.herpin.net:5000/current?uid=$uid";
+    final classesJson = await http.get(url);
+    final classes = json.decode(classesJson.body);
     return classes;
   }
 
@@ -89,18 +95,33 @@ class _ClassesScreenState extends State<ClassesScreen> {
                 child: FutureBuilder(
                   future: classesList,
                   builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      print(snapshot.error);
+                    }
                     if (snapshot.hasData) {
                       List<Widget> classCards = [];
                       for (var i = 0; i < snapshot.data.length; i++) {
-                        classCards.add(
-                          ClassCard(
-                            snapshot.data[i]["CRN"],
-                            snapshot.data[i]["Title"],
-                            snapshot.data[i]["Instructor"],
-                            snapshot.data[i]["Cap"],
-                            snapshot.data[i]["Rem"],
-                          ),
-                        );
+                        if (snapshot.data[i]["valid"] == "true") {
+                          classCards.add(
+                            ClassCard(
+                              snapshot.data[i]["CRN"].toString(),
+                              snapshot.data[i]["Title"].toString(),
+                              snapshot.data[i]["Instructor"].toString(),
+                              snapshot.data[i]["Cap"].toString(),
+                              snapshot.data[i]["Rem"].toString(),
+                            ),
+                          );
+                        } else {
+                          classCards.add(
+                            ClassCard(
+                              "${snapshot.data[i]["userCRN"].toString()} is not a valid CRN",
+                              snapshot.data[i]["error"].toString(),
+                              "N/A",
+                              "N/A",
+                              "0",
+                            ),
+                          );
+                        }
                       }
                       return Column(children: classCards);
                     } else {
