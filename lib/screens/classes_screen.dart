@@ -21,10 +21,15 @@ class _ClassesScreenState extends State<ClassesScreen> {
     //final classesJson = await DefaultAssetBundle.of(ctx).loadString("assets/data/classes.json");
     final uid = FirebaseAuth.instance.currentUser.uid;
 
-    final url = "https://cap1.herpin.net:5000/current?uid=$uid";
+    //final url = "http://cap1.herpin.net:5000/current?uid=$uid";
+    final url = "https://81dd869ddae3.ngrok.io/current?uid=$uid";
     final classesJson = await http.get(url);
     final classes = json.decode(classesJson.body);
     return classes;
+  }
+
+  void refresh() {
+    setState(() {});
   }
 
   @override
@@ -40,15 +45,29 @@ class _ClassesScreenState extends State<ClassesScreen> {
           "Add a class",
           style: TextStyle(fontFamily: "Poppins"),
         ),
-        onPressed: () =>
-            Navigator.of(context).pushNamed(AddClassScreen.routeName),
+        onPressed: () => Navigator.of(context)
+            .pushNamed(AddClassScreen.routeName)
+            .then((value) {
+          setState(() {});
+        }),
       ),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             actions: [
               IconButton(
-                  icon: Icon(Icons.exit_to_app),
+                  icon: Icon(
+                    Icons.refresh,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {});
+                  }),
+              IconButton(
+                  icon: Icon(
+                    Icons.exit_to_app,
+                    color: Colors.white,
+                  ),
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
                   })
@@ -59,7 +78,9 @@ class _ClassesScreenState extends State<ClassesScreen> {
                 builder: (BuildContext context, BoxConstraints constraints) {
               top = constraints.biggest.height;
               return FlexibleSpaceBar(
-                title: Text(top > 150 ? "" : "Howdy Class Search"),
+                title: Text(
+                  top > 150 ? "" : "Howdy Class Search",
+                ),
                 background: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -104,21 +125,25 @@ class _ClassesScreenState extends State<ClassesScreen> {
                         if (snapshot.data[i]["valid"] == "true") {
                           classCards.add(
                             ClassCard(
+                              snapshot.data[i]["id"].toString(),
                               snapshot.data[i]["CRN"].toString(),
                               snapshot.data[i]["Title"].toString(),
                               snapshot.data[i]["Instructor"].toString(),
                               snapshot.data[i]["Cap"].toString(),
                               snapshot.data[i]["Rem"].toString(),
+                              refresh,
                             ),
                           );
                         } else {
                           classCards.add(
                             ClassCard(
-                              "${snapshot.data[i]["userCRN"].toString()} is not a valid CRN",
+                              snapshot.data[i]["id"].toString(),
+                              snapshot.data[i]["userCRN"].toString(),
                               snapshot.data[i]["error"].toString(),
                               "N/A",
                               "N/A",
                               "0",
+                              refresh,
                             ),
                           );
                         }

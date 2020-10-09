@@ -13,10 +13,12 @@ class AddClassScreen extends StatefulWidget {
 
 class _AddClassScreenState extends State<AddClassScreen> {
   final _crnController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Add a New Class"),
         flexibleSpace: Container(
@@ -51,15 +53,21 @@ class _AddClassScreenState extends State<AddClassScreen> {
           ),
           RaisedButton.icon(
             onPressed: () async {
-              final crn = _crnController.text;
+              final crn = _crnController.text.trim();
+              if (crn.length != 5) {
+                _scaffoldKey.currentState.showSnackBar(SnackBar(
+                  backgroundColor: Theme.of(context).errorColor,
+                  content: Text("Invalid CRN. Please enter a valid CRN."),
+                ));
+
+                return;
+              }
               final uid = FirebaseAuth.instance.currentUser.uid;
-              const url = "https://cap1.herpin.net:5000/add";
-              print(uid);
-              print(crn);
+              //const url = "https://cap1.herpin.net:5000/add";
+              const url = "https://81dd869ddae3.ngrok.io/add";
               final payload = jsonEncode({'crn': crn, 'uid': uid});
               final response = await http.post(url,
                   headers: {'Content-Type': 'application/json'}, body: payload);
-              print(response.body);
               Navigator.of(context).pop();
             },
             icon: Icon(
