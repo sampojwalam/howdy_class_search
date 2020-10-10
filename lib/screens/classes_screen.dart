@@ -7,6 +7,7 @@ import 'package:http_client/http_client.dart';
 
 import '../widgets/class_card.dart';
 import '../screens/add_class.dart';
+import '../models/globals.dart' as globals;
 
 class ClassesScreen extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
     final uid = FirebaseAuth.instance.currentUser.uid;
 
     //final url = "http://cap1.herpin.net:5000/current?uid=$uid";
-    final url = "https://81dd869ddae3.ngrok.io/current?uid=$uid";
+    final url = "${globals.urlStem}/current?uid=$uid";
     final classesJson = await http.get(url);
     final classes = json.decode(classesJson.body);
     return classes;

@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/counter.dart' as counter;
+import '../models/globals.dart' as globals;
 
 class ClassCard extends StatelessWidget {
   final String id;
@@ -18,7 +18,7 @@ class ClassCard extends StatelessWidget {
 
   ClassCard(this.id, this.crn, this.title, this.instructor, this.capacity,
       this.rem, this.updateClasses) {
-    counter.incrementable++;
+    globals.incrementable++;
   }
 
   @override
@@ -90,8 +90,7 @@ class ClassCard extends StatelessWidget {
                       icon: Icon(Icons.close),
                       onPressed: () {
                         final uid = FirebaseAuth.instance.currentUser.uid;
-                        //const url = "https://cap1.herpin.net:5000/add";
-                        const url = "https://81dd869ddae3.ngrok.io/delete";
+                        final url = "${globals.urlStem}/delete";
                         final payload = jsonEncode({'crn': crn, 'uid': uid});
                         final response = http.post(url,
                             headers: {'Content-Type': 'application/json'},

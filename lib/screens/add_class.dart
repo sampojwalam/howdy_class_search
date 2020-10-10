@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/globals.dart' as globals;
+
 class AddClassScreen extends StatefulWidget {
   static const routeName = '/add-class';
 
@@ -64,7 +66,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
               }
               final uid = FirebaseAuth.instance.currentUser.uid;
               //const url = "https://cap1.herpin.net:5000/add";
-              const url = "https://81dd869ddae3.ngrok.io/add";
+              final url = "${globals.urlStem}/add";
               final payload = jsonEncode({'crn': crn, 'uid': uid});
               final response = await http.post(url,
                   headers: {'Content-Type': 'application/json'}, body: payload);
