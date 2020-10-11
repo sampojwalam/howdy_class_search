@@ -1,9 +1,11 @@
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
+import '../models/globals.dart' as globals;
 import '../widgets/auth/auth_form.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -17,6 +19,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Future<void> _submitAuthForm(
     String email,
+    String phone,
     String password,
     bool isLogin,
     BuildContext ctx,
@@ -28,7 +31,23 @@ class _AuthScreenState extends State<AuthScreen> {
       if (isLogin) {
         _auth.signInWithEmailAndPassword(email: email, password: password);
       } else {
-        _auth.createUserWithEmailAndPassword(email: email, password: password);
+        final userCredential = await _auth.createUserWithEmailAndPassword(
+            email: email, password: password);
+        final uid = FirebaseAuth.instance.currentUser.uid;
+        print(uid);
+        //const url = "https://cap1.herpin.net:5000/add";
+        final url = "${globals.urlStem}/addUser";
+        final payload = jsonEncode({
+          'uid': uid,
+          'email': email,
+          'phone': phone,
+          'name': '',
+          'notification': '1'
+        });
+        final response = await http.post(url,
+            headers: {'Content-Type': 'application/json'}, body: payload);
+        print(response);
+        print(response.body);
       }
     } on PlatformException catch (error) {
       var message = "An error occured, please try again!";

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class AuthForm extends StatefulWidget {
   final void Function(
     String email,
+    String phone,
     String password,
     bool isLogin,
     BuildContext ctx,
@@ -20,7 +21,7 @@ class AuthForm extends StatefulWidget {
 class _AuthFormState extends State<AuthForm> {
   final _formKey = GlobalKey<FormState>();
   String _userEmail;
-  String _userName;
+  String _userPhone = '';
   String _userPass;
   var _logInMode = true;
 
@@ -30,8 +31,10 @@ class _AuthFormState extends State<AuthForm> {
 
     if (isValid) {
       _formKey.currentState.save();
+
       widget.submitFunction(
         _userEmail.trim(),
+        _userPhone,
         _userPass,
         _logInMode,
         context,
@@ -70,6 +73,24 @@ class _AuthFormState extends State<AuthForm> {
                       _userEmail = newValue;
                     },
                   ),
+                  if (!_logInMode)
+                    TextFormField(
+                      key: ValueKey("phone"),
+                      autocorrect: false,
+                      textCapitalization: TextCapitalization.none,
+                      enableSuggestions: false,
+                      validator: (value) {
+                        //implement validation... yikes!
+                        return null;
+                      },
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                          labelText:
+                              'Phone number (optional) for text notifications'),
+                      onSaved: (newValue) {
+                        _userPhone = newValue;
+                      },
+                    ),
                   TextFormField(
                     key: ValueKey("pass"),
                     validator: (value) {

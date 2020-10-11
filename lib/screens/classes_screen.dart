@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,14 +30,15 @@ class _ClassesScreenState extends State<ClassesScreen> {
     return classes;
   }
 
-  void refresh() {
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
-    final classesList = getJson(context);
+    var classesList = getJson(context);
     //Testing json -> class object conversion
+
+    void refresh() {
+      classesList = getJson(context);
+      setState(() {});
+    }
 
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
