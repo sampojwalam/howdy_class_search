@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../models/globals.dart' as globals;
 import '../widgets/auth/auth_form.dart';
@@ -46,8 +47,17 @@ class _AuthScreenState extends State<AuthScreen> {
         });
         final response = await http.post(url,
             headers: {'Content-Type': 'application/json'}, body: payload);
-        print(response);
-        print(response.body);
+
+        FirebaseMessaging fbmInstance = FirebaseMessaging();
+        fbmInstance.requestNotificationPermissions();
+        fbmInstance.configure(onMessage: (msg) {
+          return;
+        }, onLaunch: (msg) {
+          return;
+        }, onResume: (msg) {
+          return;
+        });
+        fbmInstance.subscribeToTopic("$uid");
       }
     } on PlatformException catch (error) {
       var message = "An error occured, please try again!";
