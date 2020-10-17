@@ -45,92 +45,96 @@ class _AuthFormState extends State<AuthForm> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Card(
-        margin: EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                    key: ValueKey("email"),
-                    autocorrect: false,
-                    textCapitalization: TextCapitalization.none,
-                    enableSuggestions: false,
-                    validator: (value) {
-                      if (value.isEmpty || !value.contains('@')) {
-                        return 'Please Enter a valid email address!';
-                      } else {
-                        return null;
-                      }
-                    },
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(labelText: 'Email Address'),
-                    onSaved: (newValue) {
-                      _userEmail = newValue;
-                    },
-                  ),
-                  if (!_logInMode)
+      child: Container(
+        constraints: BoxConstraints(maxWidth: 600),
+        child: Card(
+          margin: EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     TextFormField(
-                      key: ValueKey("phone"),
+                      key: ValueKey("email"),
                       autocorrect: false,
                       textCapitalization: TextCapitalization.none,
                       enableSuggestions: false,
                       validator: (value) {
-                        //implement validation... yikes!
-                        return null;
+                        if (value.isEmpty || !value.contains('@')) {
+                          return 'Please Enter a valid email address!';
+                        } else {
+                          return null;
+                        }
                       },
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                          labelText:
-                              'Phone number (optional) for text notifications'),
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(labelText: 'Email Address'),
                       onSaved: (newValue) {
-                        _userPhone = newValue;
+                        _userEmail = newValue;
                       },
                     ),
-                  TextFormField(
-                    key: ValueKey("pass"),
-                    validator: (value) {
-                      if (value.isEmpty || value.length < 7) {
-                        return 'Password must be at least 7 characters long!';
-                      } else {
-                        return null;
-                      }
-                    },
-                    decoration: InputDecoration(labelText: 'Password'),
-                    obscureText: true,
-                    onSaved: (newValue) {
-                      _userPass = newValue;
-                    },
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  if (widget.isLoading) CircularProgressIndicator(),
-                  if (!widget.isLoading)
-                    RaisedButton(
-                      color: Theme.of(context).primaryColor,
-                      onPressed: _trySubmit,
-                      child: Text(
-                        _logInMode ? "Login" : "Signup",
-                        style: TextStyle(color: Colors.white),
+                    if (!_logInMode)
+                      TextFormField(
+                        key: ValueKey("phone"),
+                        autocorrect: false,
+                        textCapitalization: TextCapitalization.none,
+                        enableSuggestions: false,
+                        validator: (value) {
+                          //implement validation... yikes!
+                          return null;
+                        },
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                            labelText:
+                                'Phone number (optional) for text notifications'),
+                        onSaved: (newValue) {
+                          _userPhone = newValue;
+                        },
                       ),
-                    ),
-                  if (!widget.isLoading)
-                    FlatButton(
-                      onPressed: () {
-                        setState(() {
-                          _logInMode = !_logInMode;
-                        });
+                    TextFormField(
+                      key: ValueKey("pass"),
+                      validator: (value) {
+                        if (value.isEmpty || value.length < 7) {
+                          return 'Password must be at least 7 characters long!';
+                        } else {
+                          return null;
+                        }
                       },
-                      child: Text(
-                          _logInMode ? "Create New Account" : "Log In Instead"),
-                      textColor: Theme.of(context).primaryColor,
-                    )
-                ],
+                      decoration: InputDecoration(labelText: 'Password'),
+                      obscureText: true,
+                      onSaved: (newValue) {
+                        _userPass = newValue;
+                      },
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    if (widget.isLoading) CircularProgressIndicator(),
+                    if (!widget.isLoading)
+                      RaisedButton(
+                        color: Theme.of(context).primaryColor,
+                        onPressed: _trySubmit,
+                        child: Text(
+                          _logInMode ? "Login" : "Signup",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    if (!widget.isLoading)
+                      FlatButton(
+                        onPressed: () {
+                          setState(() {
+                            _logInMode = !_logInMode;
+                          });
+                        },
+                        child: Text(_logInMode
+                            ? "Create New Account"
+                            : "Log In Instead"),
+                        textColor: Theme.of(context).primaryColor,
+                      )
+                  ],
+                ),
               ),
             ),
           ),
