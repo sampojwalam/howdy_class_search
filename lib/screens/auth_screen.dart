@@ -10,6 +10,7 @@ import '../models/globals.dart' as globals;
 import '../widgets/auth/auth_form.dart';
 
 class AuthScreen extends StatefulWidget {
+  static const routeName = '/auth-screen';
   @override
   _AuthScreenState createState() => _AuthScreenState();
 }

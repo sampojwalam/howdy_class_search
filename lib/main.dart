@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import './screens/classes_screen.dart';
 import './screens/add_class.dart';
 import './screens/auth_screen.dart';
+import './screens/settings_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -58,6 +59,9 @@ class MyApp extends StatelessWidget {
       routes: {
         //key (route name) : value (builder)
         AddClassScreen.routeName: (ctx) => AddClassScreen(),
+        ClassesScreen.routeName: (ctx) => ClassesScreen(),
+        SettingsScreen.routeName: (ctx) => SettingsScreen(),
+        AuthScreen.routeName: (ctx) => AuthScreen(),
       },
     );
   }

@@ -6,11 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_client/http_client.dart';
 
+import '../widgets/app_drawer.dart';
 import '../widgets/class_card.dart';
 import '../screens/add_class.dart';
 import '../models/globals.dart' as globals;
 
 class ClassesScreen extends StatefulWidget {
+  static const routeName = '/classes-screen';
   @override
   _ClassesScreenState createState() => _ClassesScreenState();
 }
@@ -54,9 +56,15 @@ class _ClassesScreenState extends State<ClassesScreen> {
           setState(() {});
         }),
       ),
+      drawer: AppDrawer(),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            // leading: IconButton(
+            //     icon: Icon(Icons.menu),
+            //     onPressed: () {
+            //       print("work in progress");
+            //     }),
             actions: [
               IconButton(
                   icon: Icon(
@@ -66,14 +74,6 @@ class _ClassesScreenState extends State<ClassesScreen> {
                   onPressed: () {
                     setState(() {});
                   }),
-              IconButton(
-                  icon: Icon(
-                    Icons.exit_to_app,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    FirebaseAuth.instance.signOut();
-                  })
             ],
             expandedHeight: 350,
             pinned: true,
