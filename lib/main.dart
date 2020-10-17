@@ -32,7 +32,6 @@ class MyApp extends StatelessWidget {
         builder: (context, snapshot) {
           // Check for errors
           if (snapshot.hasError) {
-            print(snapshot.error);
             return Container();
           }
 
@@ -52,7 +51,6 @@ class MyApp extends StatelessWidget {
           }
 
           // Otherwise, show something whilst waiting for initialization to complete
-          print(snapshot.error);
           return Container();
         },
       ),

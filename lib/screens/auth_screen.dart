@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:howdy_class_search/screens/classes_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -26,15 +27,33 @@ class _AuthScreenState extends State<AuthScreen> {
     bool isLogin,
     BuildContext ctx,
   ) async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-      if (isLogin) {
-        _auth.signInWithEmailAndPassword(email: email, password: password);
-      } else {
-        final userCredential = await _auth.createUserWithEmailAndPassword(
-            email: email, password: password);
+    setState(() {
+      _isLoading = true;
+    });
+    if (isLogin) {
+      _auth
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((value) =>
+              Navigator.of(context).pushNamed(ClassesScreen.routeName))
+          .catchError(
+        (error) {
+          Scaffold.of(ctx).showSnackBar(
+            SnackBar(
+              content: Text("Invalid credentials! Please try again!"),
+              backgroundColor: Theme.of(ctx).errorColor,
+            ),
+          );
+          setState(
+            () {
+              _isLoading = false;
+            },
+          );
+        },
+      );
+    } else {
+      _auth
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .then((value) async {
         final uid = FirebaseAuth.instance.currentUser.uid;
         print(uid);
         //const url = "https://cap1.herpin.net:5000/add";
@@ -59,27 +78,22 @@ class _AuthScreenState extends State<AuthScreen> {
           return;
         });
         fbmInstance.subscribeToTopic("$uid");
-      }
-    } on PlatformException catch (error) {
-      var message = "An error occured, please try again!";
-      if (error.message != null) {
-        message = error.message;
-      }
-
-      Scaffold.of(ctx).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Theme.of(ctx).errorColor,
-        ),
+        Navigator.of(context).pushNamed(ClassesScreen.routeName);
+      }).catchError(
+        (error) {
+          Scaffold.of(ctx).showSnackBar(
+            SnackBar(
+              content: Text(error.message),
+              backgroundColor: Theme.of(ctx).errorColor,
+            ),
+          );
+          setState(
+            () {
+              _isLoading = false;
+            },
+          );
+        },
       );
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (error) {
-      print(error);
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
