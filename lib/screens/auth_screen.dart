@@ -30,6 +30,7 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() {
       _isLoading = true;
     });
+    Scaffold.of(context).removeCurrentSnackBar();
     if (isLogin) {
       _auth
           .signInWithEmailAndPassword(email: email, password: password)
