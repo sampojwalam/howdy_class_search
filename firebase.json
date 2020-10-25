@@ -1,16 +1,11 @@
 {
   "hosting": {
-    "public": "build/web",
+    "site": "howdy-web-app-dev",
+    "public": "build/web2",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
     ]
   }
 }

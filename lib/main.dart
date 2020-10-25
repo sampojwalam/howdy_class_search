@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Howdy Class Search',
       theme: ThemeData(
-        primaryColor: Color(0xFF500000),
+        primaryColor: /*Color(0xFF500000)*/ Colors.green,
         scaffoldBackgroundColor: Color(0xFFFEFEFE),
         fontFamily: "Poppins",
         textTheme: TextTheme(

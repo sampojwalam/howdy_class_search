@@ -18,8 +18,10 @@ class AppDrawer extends StatelessWidget {
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
                 colors: [
-                  Color(0xFF400000),
-                  Color(0xFF900000),
+                  // Color(0xFF400000),
+                  // Color(0xFF900000),
+                  Colors.green,
+                  Colors.lightGreen,
                 ],
               ),
             ),

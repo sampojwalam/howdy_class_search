@@ -98,8 +98,10 @@ class _ClassesScreenState extends State<ClassesScreen> {
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
                             colors: [
-                              Color(0xFF200000),
-                              Color(0xFF800000),
+                              // Color(0xFF200000),
+                              // Color(0xFF800000),
+                              Colors.green,
+                              Colors.lightGreen
                             ]),
                         image: DecorationImage(
                             image: AssetImage("assets/images/tamu_logo.png")),
