@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:howdy_class_search/screens/classes_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/globals.dart' as globals;
 import '../widgets/auth/auth_form.dart';
@@ -18,7 +19,37 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _auth = FirebaseAuth.instance;
+  final googleSignIn = GoogleSignIn();
   var _isLoading = false;
+
+  void _signInWithGoogle() async {
+    await Firebase.initializeApp();
+
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    final UserCredential authResult =
+        await _auth.signInWithCredential(credential);
+    final User user = authResult.user;
+
+    if (user != null) {
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+
+      final User currentUser = _auth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      print('signInWithGoogle succeeded: $user');
+
+      Navigator.of(context).pushNamed(ClassesScreen.routeName);
+    }
+  }
 
   Future<void> _submitAuthForm(
     String email,
@@ -30,7 +61,8 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() {
       _isLoading = true;
     });
-    Scaffold.of(context).removeCurrentSnackBar();
+    //Check if there's a scaffold, then if there is...
+    //Scaffold.of(context).removeCurrentSnackBar();
     if (isLogin) {
       _auth
           .signInWithEmailAndPassword(email: email, password: password)
@@ -102,7 +134,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      body: AuthForm(_submitAuthForm, _isLoading),
+      body: AuthForm(_submitAuthForm, _signInWithGoogle, _isLoading),
     );
   }
 }

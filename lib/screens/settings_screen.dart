@@ -32,11 +32,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<List<dynamic>> getSettings(BuildContext ctx) async {
     //final classesJson = await DefaultAssetBundle.of(ctx).loadString("assets/data/classes.json");
     final uid = FirebaseAuth.instance.currentUser.uid;
+    //print(uid);
 
     //final url = "http://cap1.herpin.net:5000/current?uid=$uid";
     final url = "${globals.urlStem}/user?uid=$uid";
     final settingsJson = await http.get(url);
     final settings = json.decode(settingsJson.body);
+    //print(settings);
     return settings;
   }
 
@@ -44,7 +46,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final uid = FirebaseAuth.instance.currentUser.uid;
 
     //const url = "https://cap1.herpin.net:5000/add";
-    final url = "${globals.urlStem}/addUser";
+    final url = "${globals.urlStem}/alterUser";
     if (_emailNotifications == false) {
       _email = "";
     } else {
@@ -62,6 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'name': '',
       'notification': _pushNotifications.toString()
     });
+    print(payload);
     final response = await http.post(url,
         headers: {'Content-Type': 'application/json'}, body: payload);
     print(response.body);
@@ -188,8 +191,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         return Text(
                             "Cannot connect to server. Please check your internet and try again!");
                       } else {
+                        print("probelem");
+                        //print(snapshot.data);
                         if (_pushNotifications == null) {
-                          print(snapshot.data[0]);
+                          //print(snapshot.data[0]);
                           _pushNotifications =
                               snapshot.data[0]["enableNotification"];
                         }
