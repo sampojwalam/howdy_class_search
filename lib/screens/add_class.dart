@@ -23,13 +23,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text("Add a New Class"),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
+    var linearGradient = LinearGradient(
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
               colors: [
@@ -38,7 +32,14 @@ class _AddClassScreenState extends State<AddClassScreen> {
                 Colors.green,
                 Colors.lightGreen,
               ],
-            ),
+            );
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text("Add a New Class"),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: linearGradient,
           ),
         ),
       ),
@@ -163,15 +164,10 @@ class _AddClassScreenState extends State<AddClassScreen> {
                   padding: EdgeInsets.all(10.0),
                   child: Row(
                     children: [
-                      Text("Course: "),
-                      Text(courseSuggestions[index]["Subj"]),
-                      Text(" - "),
-                      // Text("Course: "),
-                      Text(courseSuggestions[index]["Crse"]),
-                      Text("   "),
-                      Text("Section: "),
-                      Text(courseSuggestions[index]["Sec"]),
+                      Text("Course: " + courseSuggestions[index]["Subj"]),
+                      Text(" - " + courseSuggestions[index]["Crse"] + "   Section: " + courseSuggestions[index]["Sec"]),
                       SizedBox(width: 5),
+                      Text("CRN - " + courseSuggestions[index]["CRN"]),
                       RaisedButton.icon(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
@@ -199,15 +195,14 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                   'crse': _crseController.text.toString(),
                                   'uid': uid
                                 });
-                                final response2 = await http.post(url,
+                                final response2 = await http.post(url2,
                                     headers: {
                                       'Content-Type': 'application/json'
                                     },
-                                    body: payload);
+                                    body: payload2);
                                 //print(response.body);
                                 setState(() {
-                                  courseSuggestions =
-                                      json.decode(response.body);
+                                  courseSuggestions = json.decode(response2.body);
                                 });
                                 //Navigator.of(context).pop();
                               },
@@ -218,6 +213,49 @@ class _AddClassScreenState extends State<AddClassScreen> {
                             ? Text("Added")
                             : Text("Add Class"),
                       )
+                      , courseSuggestions[index]["added"] == 'true'
+                            ? RaisedButton.icon(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          color: Theme.of(context).primaryColor,
+                          onPressed: () async {
+                                  final crn = courseSuggestions[index]["CRN"];
+                                  final uid =
+                                      FirebaseAuth.instance.currentUser.uid;
+                                  //const url = "https://cap1.herpin.net:5000/add";
+                                  final url = "${globals.urlStem}/delete";
+                                  final payload =
+                                      jsonEncode({'crn': crn, 'uid': uid});
+                                  final response = await http.post(url,
+                                      headers: {
+                                        'Content-Type': 'application/json'
+                                      },
+                                      body: payload);
+
+                                  final url2 = "${globals.urlStem}/fullQuery";
+                                  final payload2 = jsonEncode({
+                                    'subj': _subjController.text.toString(),
+                                    'crse': _crseController.text.toString(),
+                                    'uid': uid
+                                  });
+                                  final response2 = await http.post(url2,
+                                      headers: {
+                                        'Content-Type': 'application/json'
+                                      },
+                                      body: payload2);
+                                  //print(response.body);
+                                  setState(() {
+                                    courseSuggestions = json.decode(response2.body);
+                                  });
+                                  //Navigator.of(context).pop();
+                                },
+                          icon: courseSuggestions[index]["added"] == 'true'
+                              ? Icon(Icons.remove)
+                              : Icon(Icons.remove),
+                          label: Text(""),
+                        )
+                      :  Text("")
                     ],
                   ),
                 );
