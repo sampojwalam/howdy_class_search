@@ -47,6 +47,37 @@ class _AuthScreenState extends State<AuthScreen> {
 
       print('signInWithGoogle succeeded: $user');
 
+      final uid = currentUser.uid;
+      final email = currentUser.email;
+      final phone =
+          currentUser.phoneNumber == null ? '' : currentUser.phoneNumber;
+
+      final url = "${globals.urlStem}/addUser";
+      final payload = jsonEncode({
+        'uid': uid,
+        'email': email,
+        'phone': phone,
+        'name': '',
+        'notification': '1'
+      });
+      final response = await http
+          .post(url,
+              headers: {'Content-Type': 'application/json'}, body: payload)
+          .catchError(() {
+        print("User exists. Logging in.");
+      });
+
+      FirebaseMessaging fbmInstance = FirebaseMessaging();
+      fbmInstance.requestNotificationPermissions();
+      fbmInstance.configure(onMessage: (msg) {
+        return;
+      }, onLaunch: (msg) {
+        return;
+      }, onResume: (msg) {
+        return;
+      });
+      fbmInstance.subscribeToTopic("$uid");
+
       Navigator.of(context).pushNamed(ClassesScreen.routeName);
     }
   }
