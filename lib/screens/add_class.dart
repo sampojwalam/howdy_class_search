@@ -27,12 +27,11 @@ class _AddClassScreenState extends State<AddClassScreen> {
     if (myTimer != null) {
       myTimer.cancel();
     }
-    if (json.decode(payload)["subj"] == "" && json.decode(payload)["crse"] == "") {
-      
+    if (json.decode(payload)["subj"] == "" &&
+        json.decode(payload)["crse"] == "") {
       setState(() {
-            courseSuggestions = [];
-          });
-      
+        courseSuggestions = [];
+      });
     } else {
       myTimer = Timer(Duration(milliseconds: 200), () async {
         print("Timer done! Running full query now!");

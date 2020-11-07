@@ -196,6 +196,7 @@ class _AuthFormState extends State<AuthForm> {
                           return null;
                         }
                       },
+                      onFieldSubmitted: (value) => _trySubmit(),
                       decoration: InputDecoration(labelText: 'Password'),
                       obscureText: true,
                       onSaved: (newValue) {
