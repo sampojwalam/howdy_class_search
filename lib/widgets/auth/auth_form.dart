@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
@@ -165,6 +166,9 @@ class _AuthFormState extends State<AuthForm> {
                       },
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(labelText: 'Email Address'),
+                      onChanged: (value) {
+                        _userEmail = value;
+                      },
                       onSaved: (newValue) {
                         _userEmail = newValue;
                       },
@@ -216,18 +220,70 @@ class _AuthFormState extends State<AuthForm> {
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
+                    SizedBox(height: 10),
                     if (!widget.isLoading)
-                      FlatButton(
-                        onPressed: () {
-                          setState(() {
-                            _logInMode = !_logInMode;
-                          });
-                        },
-                        child: Text(_logInMode
-                            ? "Create New Account"
-                            : "Log In Instead"),
-                        textColor: Theme.of(context).primaryColor,
-                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          FlatButton(
+                            onPressed: () {
+                              setState(() {
+                                _logInMode = !_logInMode;
+                              });
+                            },
+                            child: Text(_logInMode
+                                ? "Create New Account"
+                                : "Log In Instead"),
+                            textColor: Theme.of(context).primaryColor,
+                          ),
+                          Text(" | "),
+                          FlatButton(
+                            onPressed: () {
+                              if (_userEmail == "" || _userEmail == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor:
+                                        Theme.of(context).errorColor,
+                                    content: Text(
+                                        "Please enter your email and try again"),
+                                  ),
+                                );
+                              } else {
+                                final _auth = FirebaseAuth.instance;
+                                _auth
+                                    .sendPasswordResetEmail(
+                                  email: _userEmail.trim(),
+                                )
+                                    .then((_) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor: Colors.green,
+                                      content: Text(
+                                        "A link to reset your password has been sent to your email.",
+                                      ),
+                                    ),
+                                  );
+                                }).catchError((error) {
+                                  print(error);
+                                  if (error.toString().trim() ==
+                                      "FirebaseError: The email address is badly formatted. (auth/invalid-email)") {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        backgroundColor:
+                                            Theme.of(context).errorColor,
+                                        content: Text(
+                                            "No account exists with that email."),
+                                      ),
+                                    );
+                                  }
+                                });
+                              }
+                            },
+                            child: Text("Forgot Password"),
+                            textColor: Theme.of(context).errorColor,
+                          ),
+                        ],
+                      )
                   ],
                 ),
               ),

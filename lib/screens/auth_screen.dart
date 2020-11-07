@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -67,16 +68,18 @@ class _AuthScreenState extends State<AuthScreen> {
         print("User exists. Logging in.");
       });
 
-      FirebaseMessaging fbmInstance = FirebaseMessaging();
-      fbmInstance.requestNotificationPermissions();
-      fbmInstance.configure(onMessage: (msg) {
-        return;
-      }, onLaunch: (msg) {
-        return;
-      }, onResume: (msg) {
-        return;
-      });
-      fbmInstance.subscribeToTopic("$uid");
+      if (!kIsWeb) {
+        FirebaseMessaging fbmInstance = FirebaseMessaging();
+        fbmInstance.requestNotificationPermissions();
+        fbmInstance.configure(onMessage: (msg) {
+          return;
+        }, onLaunch: (msg) {
+          return;
+        }, onResume: (msg) {
+          return;
+        });
+        fbmInstance.subscribeToTopic("$uid");
+      }
 
       Navigator.of(context).pushNamed(ClassesScreen.routeName);
     }
@@ -132,16 +135,19 @@ class _AuthScreenState extends State<AuthScreen> {
         final response = await http.post(url,
             headers: {'Content-Type': 'application/json'}, body: payload);
 
-        FirebaseMessaging fbmInstance = FirebaseMessaging();
-        fbmInstance.requestNotificationPermissions();
-        fbmInstance.configure(onMessage: (msg) {
-          return;
-        }, onLaunch: (msg) {
-          return;
-        }, onResume: (msg) {
-          return;
-        });
-        fbmInstance.subscribeToTopic("$uid");
+        if (!kIsWeb) {
+          FirebaseMessaging fbmInstance = FirebaseMessaging();
+          fbmInstance.requestNotificationPermissions();
+          fbmInstance.configure(onMessage: (msg) {
+            return;
+          }, onLaunch: (msg) {
+            return;
+          }, onResume: (msg) {
+            return;
+          });
+          fbmInstance.subscribeToTopic("$uid");
+        }
+
         Navigator.of(context).pushNamed(ClassesScreen.routeName);
       }).catchError(
         (error) {
