@@ -178,9 +178,17 @@ class _AddClassScreenState extends State<AddClassScreen> {
               },
             ),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 15),
           if (courseSuggestions.isNotEmpty)
-            Text("${courseSuggestions.length} results found:"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text("${courseSuggestions.length} results found:"),
+                ),
+              ],
+            ),
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.vertical,

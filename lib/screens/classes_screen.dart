@@ -126,6 +126,10 @@ class _ClassesScreenState extends State<ClassesScreen> {
                     }
                     if (snapshot.hasData) {
                       List<Widget> classCards = [];
+                      classCards.add(
+                        Text(
+                            "Currently tracking ${snapshot.data.length} classes."),
+                      );
                       for (var i = 0; i < snapshot.data.length; i++) {
                         if (snapshot.data[i]["valid"] == "true") {
                           classCards.add(

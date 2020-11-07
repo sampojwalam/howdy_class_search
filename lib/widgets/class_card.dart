@@ -61,6 +61,7 @@ class ClassCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontFamily: "Poppins",
                           fontSize: 20,
