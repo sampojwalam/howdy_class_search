@@ -37,6 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     //final url = "http://cap1.herpin.net:5000/current?uid=$uid";
     final url = "${globals.urlStem}/user?uid=$uid";
     final settingsJson = await http.get(url);
+    print(settingsJson);
     final settings = json.decode(settingsJson.body);
     //print(settings);
     return settings;
@@ -191,7 +192,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         return Text(
                             "Cannot connect to server. Please check your internet and try again!");
                       } else {
-                        print("probelem");
                         //print(snapshot.data);
                         if (_pushNotifications == null) {
                           //print(snapshot.data[0]);
