@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -18,16 +19,44 @@ class _AddClassScreenState extends State<AddClassScreen> {
   final _subjController = TextEditingController();
   final _crseController = TextEditingController();
   var courseSuggestions = [];
+  Timer myTimer;
+  String myStr;
+
+  void fullQuerySearch(String payload) {
+    final url = "${globals.urlStem}/fullQuery";
+    if (myTimer != null) {
+      myTimer.cancel();
+    }
+    if (json.decode(payload)["subj"] == "" && json.decode(payload)["crse"] == "") {
+      
+      setState(() {
+            courseSuggestions = [];
+          });
+      
+    } else {
+      myTimer = Timer(Duration(milliseconds: 200), () async {
+        print("Timer done! Running full query now!");
+
+        await http
+            .post(url,
+                headers: {'Content-Type': 'application/json'}, body: payload)
+            .then((response) {
+          setState(() {
+            courseSuggestions = json.decode(response.body);
+          });
+        });
+      });
+    }
+  }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    print(screenWidth);
 
-    if (_subjController.text.trim().isEmpty) {
-      courseSuggestions = [];
+    if (courseSuggestions.isNotEmpty) {
+      print("Course Title" + courseSuggestions[0]["Title"].toString());
     }
 
     var linearGradient = LinearGradient(
@@ -113,19 +142,15 @@ class _AddClassScreenState extends State<AddClassScreen> {
               controller: _subjController,
               onChanged: (value) async {
                 final uid = FirebaseAuth.instance.currentUser.uid;
-                final url = "${globals.urlStem}/fullQuery";
+
                 final payload = jsonEncode({
                   'subj': value,
                   'crse': _crseController.text.toString(),
                   'uid': uid
                 });
-                final response = await http.post(url,
-                    headers: {'Content-Type': 'application/json'},
-                    body: payload);
-                //print(response.body);
-                setState(() {
-                  courseSuggestions = json.decode(response.body);
-                });
+
+                fullQuerySearch(payload);
+
                 //print(courseSuggestions);
               },
             ),
@@ -145,19 +170,12 @@ class _AddClassScreenState extends State<AddClassScreen> {
               controller: _crseController,
               onChanged: (value) async {
                 final uid = FirebaseAuth.instance.currentUser.uid;
-                final url = "${globals.urlStem}/fullQuery";
                 final payload = jsonEncode({
                   'subj': _subjController.text.toString(),
                   'crse': value,
                   'uid': uid
                 });
-                final response = await http.post(url,
-                    headers: {'Content-Type': 'application/json'},
-                    body: payload);
-                //print(response.body);
-                setState(() {
-                  courseSuggestions = json.decode(response.body);
-                });
+                fullQuerySearch(payload);
               },
             ),
           ),
