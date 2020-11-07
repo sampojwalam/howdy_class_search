@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/globals.dart' as globals;
+import './auth_screen.dart';
 
 class AddClassScreen extends StatefulWidget {
   static const routeName = '/add-class';
@@ -53,6 +54,10 @@ class _AddClassScreenState extends State<AddClassScreen> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+
+    if (FirebaseAuth.instance.currentUser == null) {
+      Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+    }
 
     if (courseSuggestions.isNotEmpty) {
       print("Course Title" + courseSuggestions[0]["Title"].toString());

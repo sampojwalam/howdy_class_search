@@ -68,6 +68,9 @@ class _AuthScreenState extends State<AuthScreen> {
         print("User exists. Logging in.");
       });
 
+      final urlLogin = "${globals.urlStem}/login";
+      final responseLogin = await http.get(urlLogin);
+
       if (!kIsWeb) {
         FirebaseMessaging fbmInstance = FirebaseMessaging();
         fbmInstance.requestNotificationPermissions();
@@ -100,11 +103,14 @@ class _AuthScreenState extends State<AuthScreen> {
     if (isLogin) {
       _auth
           .signInWithEmailAndPassword(email: email, password: password)
-          .then((value) =>
-              Navigator.of(context).pushNamed(ClassesScreen.routeName))
-          .catchError(
+          .then((value) async {
+        final url = "${globals.urlStem}/login";
+        final response = await http.get(url);
+        Navigator.of(context).pushNamed(ClassesScreen.routeName);
+      }).catchError(
         (error) {
-          Scaffold.of(ctx).showSnackBar(
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Invalid credentials! Please try again!"),
               backgroundColor: Theme.of(ctx).errorColor,
@@ -122,7 +128,7 @@ class _AuthScreenState extends State<AuthScreen> {
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) async {
         final uid = FirebaseAuth.instance.currentUser.uid;
-        print(uid);
+        //print(uid);
         //const url = "https://cap1.herpin.net:5000/add";
         final url = "${globals.urlStem}/addUser";
         final payload = jsonEncode({
@@ -151,6 +157,7 @@ class _AuthScreenState extends State<AuthScreen> {
         Navigator.of(context).pushNamed(ClassesScreen.routeName);
       }).catchError(
         (error) {
+          ScaffoldMessenger.of(context).removeCurrentSnackBar();
           Scaffold.of(ctx).showSnackBar(
             SnackBar(
               content: Text(error.message),

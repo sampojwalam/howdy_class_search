@@ -240,6 +240,8 @@ class _AuthFormState extends State<AuthForm> {
                           FlatButton(
                             onPressed: () {
                               if (_userEmail == "" || _userEmail == null) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     backgroundColor:
@@ -255,6 +257,8 @@ class _AuthFormState extends State<AuthForm> {
                                   email: _userEmail.trim(),
                                 )
                                     .then((_) {
+                                  ScaffoldMessenger.of(context)
+                                      .removeCurrentSnackBar();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       backgroundColor: Colors.green,
@@ -267,6 +271,8 @@ class _AuthFormState extends State<AuthForm> {
                                   print(error);
                                   if (error.toString().trim() ==
                                       "FirebaseError: The email address is badly formatted. (auth/invalid-email)") {
+                                    ScaffoldMessenger.of(context)
+                                        .removeCurrentSnackBar();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         backgroundColor:

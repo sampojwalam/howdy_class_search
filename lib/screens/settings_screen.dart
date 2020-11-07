@@ -73,9 +73,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (FirebaseAuth.instance.currentUser == null) {
+      Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+    }
+
     if (settings == null) {
       settings = getSettings(context);
     }
+
     return Scaffold(
       key: _scaffoldKey,
 

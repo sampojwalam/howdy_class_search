@@ -8,8 +8,9 @@ import 'package:http_client/http_client.dart';
 
 import '../widgets/app_drawer.dart';
 import '../widgets/class_card.dart';
-import '../screens/add_class.dart';
+import './add_class.dart';
 import '../models/globals.dart' as globals;
+import './auth_screen.dart';
 
 class ClassesScreen extends StatefulWidget {
   static const routeName = '/classes-screen';
