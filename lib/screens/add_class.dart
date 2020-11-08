@@ -89,6 +89,10 @@ class _AddClassScreenState extends State<AddClassScreen> {
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: TextField(
+                keyboardType: TextInputType.numberWithOptions(
+                  decimal: false,
+                  signed: false,
+                ),
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     gapPadding: 5.0,
@@ -99,6 +103,24 @@ class _AddClassScreenState extends State<AddClassScreen> {
                   labelText: "CRN",
                 ),
                 controller: _crnController,
+                onSubmitted: (inputCRN) async {
+                  final crn = inputCRN.trim();
+                  if (crn.length != 5) {
+                    _scaffoldKey.currentState.showSnackBar(SnackBar(
+                      backgroundColor: Theme.of(context).errorColor,
+                      content: Text("Invalid CRN. Please enter a valid CRN."),
+                    ));
+                    return;
+                  }
+                  final uid = FirebaseAuth.instance.currentUser.uid;
+                  //const url = "https://cap1.herpin.net:5000/add";
+                  final url = "${globals.urlStem}/add";
+                  final payload = jsonEncode({'crn': crn, 'uid': uid});
+                  final response = await http.post(url,
+                      headers: {'Content-Type': 'application/json'},
+                      body: payload);
+                  Navigator.of(context).pop();
+                },
               ),
             ),
             RaisedButton.icon(
