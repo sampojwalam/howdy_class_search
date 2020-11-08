@@ -83,120 +83,122 @@ class _AddClassScreenState extends State<AddClassScreen> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  gapPadding: 5.0,
-                  borderRadius: const BorderRadius.all(
-                    const Radius.circular(20.0),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    gapPadding: 5.0,
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(20.0),
+                    ),
                   ),
+                  labelText: "CRN",
                 ),
-                labelText: "CRN",
+                controller: _crnController,
               ),
-              controller: _crnController,
             ),
-          ),
-          RaisedButton.icon(
-            onPressed: () async {
-              final crn = _crnController.text.trim();
-              if (crn.length != 5) {
-                _scaffoldKey.currentState.showSnackBar(SnackBar(
-                  backgroundColor: Theme.of(context).errorColor,
-                  content: Text("Invalid CRN. Please enter a valid CRN."),
-                ));
+            RaisedButton.icon(
+              onPressed: () async {
+                final crn = _crnController.text.trim();
+                if (crn.length != 5) {
+                  _scaffoldKey.currentState.showSnackBar(SnackBar(
+                    backgroundColor: Theme.of(context).errorColor,
+                    content: Text("Invalid CRN. Please enter a valid CRN."),
+                  ));
 
-                return;
-              }
-              final uid = FirebaseAuth.instance.currentUser.uid;
-              //const url = "https://cap1.herpin.net:5000/add";
-              final url = "${globals.urlStem}/add";
-              final payload = jsonEncode({'crn': crn, 'uid': uid});
-              final response = await http.post(url,
-                  headers: {'Content-Type': 'application/json'}, body: payload);
-              Navigator.of(context).pop();
-            },
-            icon: Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
-            label: Text(
-              "Add Class",
-              style: TextStyle(color: Colors.white),
-            ),
-            elevation: 0,
-            color: Theme.of(context).primaryColor,
-            //materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  gapPadding: 5.0,
-                  borderRadius: const BorderRadius.all(
-                    const Radius.circular(20.0),
-                  ),
-                ),
-                labelText: "Subject",
-              ),
-              controller: _subjController,
-              onChanged: (value) async {
+                  return;
+                }
                 final uid = FirebaseAuth.instance.currentUser.uid;
-
-                final payload = jsonEncode({
-                  'subj': value,
-                  'crse': _crseController.text.toString(),
-                  'uid': uid
-                });
-
-                fullQuerySearch(payload);
-
-                //print(courseSuggestions);
+                //const url = "https://cap1.herpin.net:5000/add";
+                final url = "${globals.urlStem}/add";
+                final payload = jsonEncode({'crn': crn, 'uid': uid});
+                final response = await http.post(url,
+                    headers: {'Content-Type': 'application/json'},
+                    body: payload);
+                Navigator.of(context).pop();
               },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  gapPadding: 5.0,
-                  borderRadius: const BorderRadius.all(
-                    const Radius.circular(20.0),
-                  ),
-                ),
-                labelText: "Course",
+              icon: Icon(
+                Icons.add,
+                color: Colors.white,
               ),
-              controller: _crseController,
-              onChanged: (value) async {
-                final uid = FirebaseAuth.instance.currentUser.uid;
-                final payload = jsonEncode({
-                  'subj': _subjController.text.toString(),
-                  'crse': value,
-                  'uid': uid
-                });
-                fullQuerySearch(payload);
-              },
+              label: Text(
+                "Add Class",
+                style: TextStyle(color: Colors.white),
+              ),
+              elevation: 0,
+              color: Theme.of(context).primaryColor,
+              //materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-          ),
-          SizedBox(height: 15),
-          if (courseSuggestions.isNotEmpty)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Text("${courseSuggestions.length} results found:"),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    gapPadding: 5.0,
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(20.0),
+                    ),
+                  ),
+                  labelText: "Subject",
                 ),
-              ],
+                controller: _subjController,
+                onChanged: (value) async {
+                  final uid = FirebaseAuth.instance.currentUser.uid;
+
+                  final payload = jsonEncode({
+                    'subj': value,
+                    'crse': _crseController.text.toString(),
+                    'uid': uid
+                  });
+
+                  fullQuerySearch(payload);
+
+                  //print(courseSuggestions);
+                },
+              ),
             ),
-          Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.vertical,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    gapPadding: 5.0,
+                    borderRadius: const BorderRadius.all(
+                      const Radius.circular(20.0),
+                    ),
+                  ),
+                  labelText: "Course",
+                ),
+                controller: _crseController,
+                onChanged: (value) async {
+                  final uid = FirebaseAuth.instance.currentUser.uid;
+                  final payload = jsonEncode({
+                    'subj': _subjController.text.toString(),
+                    'crse': value,
+                    'uid': uid
+                  });
+                  fullQuerySearch(payload);
+                },
+              ),
+            ),
+            SizedBox(height: 15),
+            if (courseSuggestions.isNotEmpty)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: Text("${courseSuggestions.length} results found:"),
+                  ),
+                ],
+              ),
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              //scrollDirection: Axis.vertical,
               shrinkWrap: true,
               itemCount: courseSuggestions.length,
               itemBuilder: (context, index) {
@@ -214,12 +216,19 @@ class _AddClassScreenState extends State<AddClassScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         SizedBox(
-                          width: screenWidth < 500 ? 230 : null,
+                          width: screenWidth < 500 ? 265 : null,
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Title: " +
-                                    courseSuggestions[index]["Title"]),
+                                Text(
+                                  "Title: " + courseSuggestions[index]["Title"],
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.fade,
+                                  softWrap: false,
+                                ),
                                 Row(
                                   children: [
                                     Text("Course: " +
@@ -239,102 +248,234 @@ class _AddClassScreenState extends State<AddClassScreen> {
                         SizedBox(width: 5),
                         Column(
                           children: [
-                            RaisedButton.icon(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              color: Theme.of(context).primaryColor,
-                              onPressed: courseSuggestions[index]["added"] ==
-                                      'true'
-                                  ? null
-                                  : () async {
-                                      final crn =
-                                          courseSuggestions[index]["CRN"];
-                                      final uid =
-                                          FirebaseAuth.instance.currentUser.uid;
-                                      //const url = "https://cap1.herpin.net:5000/add";
-                                      final url = "${globals.urlStem}/add";
-                                      final payload =
-                                          jsonEncode({'crn': crn, 'uid': uid});
-                                      final response = await http.post(url,
-                                          headers: {
-                                            'Content-Type': 'application/json'
-                                          },
-                                          body: payload);
-                                      print(response.body);
+                            screenWidth < 500
+                                ? Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      color: courseSuggestions[index]
+                                                  ["added"] ==
+                                              'true'
+                                          ? Colors.grey
+                                          : Theme.of(context).primaryColor,
+                                    ),
+                                    child: IconButton(
+                                      color: Colors.white,
+                                      onPressed: courseSuggestions[index]
+                                                  ["added"] ==
+                                              'true'
+                                          ? null
+                                          : () async {
+                                              final crn =
+                                                  courseSuggestions[index]
+                                                      ["CRN"];
+                                              final uid = FirebaseAuth
+                                                  .instance.currentUser.uid;
+                                              //const url = "https://cap1.herpin.net:5000/add";
+                                              final url =
+                                                  "${globals.urlStem}/add";
+                                              final payload = jsonEncode(
+                                                  {'crn': crn, 'uid': uid});
+                                              final response = await http.post(
+                                                  url,
+                                                  headers: {
+                                                    'Content-Type':
+                                                        'application/json'
+                                                  },
+                                                  body: payload);
+                                              print(response.body);
 
-                                      final url2 =
-                                          "${globals.urlStem}/fullQuery";
-                                      final payload2 = jsonEncode({
-                                        'subj': _subjController.text.toString(),
-                                        'crse': _crseController.text.toString(),
-                                        'uid': uid
-                                      });
-                                      final response2 = await http.post(url2,
-                                          headers: {
-                                            'Content-Type': 'application/json'
-                                          },
-                                          body: payload2);
-                                      //print(response.body);
-                                      setState(() {
-                                        courseSuggestions =
-                                            json.decode(response2.body);
-                                      });
-                                      //Navigator.of(context).pop();
-                                    },
-                              icon: courseSuggestions[index]["added"] == 'true'
-                                  ? Icon(Icons.check)
-                                  : Icon(Icons.add),
-                              label: courseSuggestions[index]["added"] == 'true'
-                                  ? Text(screenWidth < 500 ? "" : "Added")
-                                  : Text(screenWidth < 500 ? "" : "Add Class"),
-                            ),
-                            SizedBox(height: 10),
-                            courseSuggestions[index]["added"] == 'true'
-                                ? RaisedButton.icon(
+                                              final url2 =
+                                                  "${globals.urlStem}/fullQuery";
+                                              final payload2 = jsonEncode({
+                                                'subj': _subjController.text
+                                                    .toString(),
+                                                'crse': _crseController.text
+                                                    .toString(),
+                                                'uid': uid
+                                              });
+                                              final response2 = await http.post(
+                                                  url2,
+                                                  headers: {
+                                                    'Content-Type':
+                                                        'application/json'
+                                                  },
+                                                  body: payload2);
+                                              //print(response.body);
+                                              setState(() {
+                                                courseSuggestions =
+                                                    json.decode(response2.body);
+                                              });
+                                              //Navigator.of(context).pop();
+                                            },
+                                      icon: courseSuggestions[index]["added"] ==
+                                              'true'
+                                          ? Icon(Icons.check)
+                                          : Icon(Icons.add),
+                                    ),
+                                  )
+                                : RaisedButton.icon(
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
-                                    color: Colors.red,
-                                    onPressed: () async {
-                                      final crn =
-                                          courseSuggestions[index]["CRN"];
-                                      final uid =
-                                          FirebaseAuth.instance.currentUser.uid;
-                                      //const url = "https://cap1.herpin.net:5000/add";
-                                      final url = "${globals.urlStem}/delete";
-                                      final payload =
-                                          jsonEncode({'crn': crn, 'uid': uid});
-                                      final response = await http.post(url,
-                                          headers: {
-                                            'Content-Type': 'application/json'
-                                          },
-                                          body: payload);
+                                    color: Theme.of(context).primaryColor,
+                                    onPressed: courseSuggestions[index]
+                                                ["added"] ==
+                                            'true'
+                                        ? null
+                                        : () async {
+                                            final crn =
+                                                courseSuggestions[index]["CRN"];
+                                            final uid = FirebaseAuth
+                                                .instance.currentUser.uid;
+                                            //const url = "https://cap1.herpin.net:5000/add";
+                                            final url =
+                                                "${globals.urlStem}/add";
+                                            final payload = jsonEncode(
+                                                {'crn': crn, 'uid': uid});
+                                            final response = await http.post(
+                                                url,
+                                                headers: {
+                                                  'Content-Type':
+                                                      'application/json'
+                                                },
+                                                body: payload);
+                                            print(response.body);
 
-                                      final url2 =
-                                          "${globals.urlStem}/fullQuery";
-                                      final payload2 = jsonEncode({
-                                        'subj': _subjController.text.toString(),
-                                        'crse': _crseController.text.toString(),
-                                        'uid': uid
-                                      });
-                                      final response2 = await http.post(url2,
-                                          headers: {
-                                            'Content-Type': 'application/json'
+                                            final url2 =
+                                                "${globals.urlStem}/fullQuery";
+                                            final payload2 = jsonEncode({
+                                              'subj': _subjController.text
+                                                  .toString(),
+                                              'crse': _crseController.text
+                                                  .toString(),
+                                              'uid': uid
+                                            });
+                                            final response2 = await http.post(
+                                                url2,
+                                                headers: {
+                                                  'Content-Type':
+                                                      'application/json'
+                                                },
+                                                body: payload2);
+                                            //print(response.body);
+                                            setState(() {
+                                              courseSuggestions =
+                                                  json.decode(response2.body);
+                                            });
+                                            //Navigator.of(context).pop();
                                           },
-                                          body: payload2);
-                                      //print(response.body);
-                                      setState(() {
-                                        courseSuggestions =
-                                            json.decode(response2.body);
-                                      });
-                                      //Navigator.of(context).pop();
-                                    },
-                                    icon: Icon(Icons.delete),
-                                    label:
-                                        Text(screenWidth < 500 ? "" : "Remove"),
-                                  )
-                                : Text("")
+                                    icon: courseSuggestions[index]["added"] ==
+                                            'true'
+                                        ? Icon(Icons.check)
+                                        : Icon(Icons.add),
+                                    label: courseSuggestions[index]["added"] ==
+                                            'true'
+                                        ? Text("Added")
+                                        : Text("Add Class"),
+                                  ),
+                            SizedBox(height: 10),
+                            if (courseSuggestions[index]["added"] == 'true')
+                              screenWidth < 500
+                                  ? Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        color: Colors.red,
+                                      ),
+                                      child: IconButton(
+                                        // shape: RoundedRectangleBorder(
+                                        //   borderRadius:
+                                        //       BorderRadius.circular(10.0),
+                                        // ),
+                                        color: Colors.white,
+                                        onPressed: () async {
+                                          final crn =
+                                              courseSuggestions[index]["CRN"];
+                                          final uid = FirebaseAuth
+                                              .instance.currentUser.uid;
+                                          //const url = "https://cap1.herpin.net:5000/add";
+                                          final url =
+                                              "${globals.urlStem}/delete";
+                                          final payload = jsonEncode(
+                                              {'crn': crn, 'uid': uid});
+                                          final response = await http.post(url,
+                                              headers: {
+                                                'Content-Type':
+                                                    'application/json'
+                                              },
+                                              body: payload);
+
+                                          final url2 =
+                                              "${globals.urlStem}/fullQuery";
+                                          final payload2 = jsonEncode({
+                                            'subj':
+                                                _subjController.text.toString(),
+                                            'crse':
+                                                _crseController.text.toString(),
+                                            'uid': uid
+                                          });
+                                          final response2 = await http.post(
+                                              url2,
+                                              headers: {
+                                                'Content-Type':
+                                                    'application/json'
+                                              },
+                                              body: payload2);
+                                          //print(response.body);
+                                          setState(() {
+                                            courseSuggestions =
+                                                json.decode(response2.body);
+                                          });
+                                          //Navigator.of(context).pop();
+                                        },
+                                        icon: Icon(Icons.delete),
+                                      ),
+                                    )
+                                  : RaisedButton.icon(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      color: Colors.red,
+                                      onPressed: () async {
+                                        final crn =
+                                            courseSuggestions[index]["CRN"];
+                                        final uid = FirebaseAuth
+                                            .instance.currentUser.uid;
+                                        //const url = "https://cap1.herpin.net:5000/add";
+                                        final url = "${globals.urlStem}/delete";
+                                        final payload = jsonEncode(
+                                            {'crn': crn, 'uid': uid});
+                                        final response = await http.post(url,
+                                            headers: {
+                                              'Content-Type': 'application/json'
+                                            },
+                                            body: payload);
+
+                                        final url2 =
+                                            "${globals.urlStem}/fullQuery";
+                                        final payload2 = jsonEncode({
+                                          'subj':
+                                              _subjController.text.toString(),
+                                          'crse':
+                                              _crseController.text.toString(),
+                                          'uid': uid
+                                        });
+                                        final response2 = await http.post(url2,
+                                            headers: {
+                                              'Content-Type': 'application/json'
+                                            },
+                                            body: payload2);
+                                        //print(response.body);
+                                        setState(() {
+                                          courseSuggestions =
+                                              json.decode(response2.body);
+                                        });
+                                        //Navigator.of(context).pop();
+                                      },
+                                      icon: Icon(Icons.delete),
+                                      label: Text("Remove"),
+                                    )
                           ],
                         ),
                       ],
@@ -343,8 +484,8 @@ class _AddClassScreenState extends State<AddClassScreen> {
                 );
               },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

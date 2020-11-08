@@ -55,7 +55,7 @@ class _AuthFormState extends State<AuthForm> {
           margin: EdgeInsets.all(20),
           child: SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.all(10),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -236,7 +236,7 @@ class _AuthFormState extends State<AuthForm> {
                                 : "Log In Instead"),
                             textColor: Theme.of(context).primaryColor,
                           ),
-                          Text(" | "),
+                          Text("|"),
                           FlatButton(
                             onPressed: () {
                               if (_userEmail == "" || _userEmail == null) {

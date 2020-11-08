@@ -8,9 +8,9 @@ import 'package:http_client/http_client.dart';
 
 import '../widgets/app_drawer.dart';
 import '../widgets/class_card.dart';
+import '../widgets/invalid_class_card.dart';
 import './add_class.dart';
 import '../models/globals.dart' as globals;
-import './auth_screen.dart';
 
 class ClassesScreen extends StatefulWidget {
   static const routeName = '/classes-screen';
@@ -146,13 +146,8 @@ class _ClassesScreenState extends State<ClassesScreen> {
                           );
                         } else {
                           classCards.add(
-                            ClassCard(
-                              snapshot.data[i]["id"].toString(),
+                            InvalidClassCard(
                               snapshot.data[i]["userCRN"].toString(),
-                              snapshot.data[i]["error"].toString(),
-                              "N/A",
-                              "N/A",
-                              "0",
                               refresh,
                             ),
                           );

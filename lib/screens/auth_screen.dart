@@ -64,12 +64,14 @@ class _AuthScreenState extends State<AuthScreen> {
       final response = await http
           .post(url,
               headers: {'Content-Type': 'application/json'}, body: payload)
-          .catchError(() {
+          .catchError((error) {
         print("User exists. Logging in.");
       });
 
       final urlLogin = "${globals.urlStem}/login";
       final responseLogin = await http.get(urlLogin);
+
+      print("is web ?................................ $kIsWeb");
 
       if (!kIsWeb) {
         FirebaseMessaging fbmInstance = FirebaseMessaging();

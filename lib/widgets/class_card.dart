@@ -61,13 +61,18 @@ class ClassCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: TextOverflow.fade,
+                      softWrap: false,
+                      maxLines: 1,
                       style: TextStyle(
                           fontFamily: "Poppins",
                           fontSize: 20,
                           letterSpacing: 1.5),
                     ),
-                    Text("Instructor: " + instructor),
+                    Text(
+                      "Instructor: " + instructor,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     Row(
                       children: [
                         Column(
