@@ -16,17 +16,13 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _emailNotifications;
+  bool _enableNotifications;
   bool _phoneNotifications;
-  bool _pushNotifications;
-  String _email;
   String _phone;
-  TextEditingController _emailController;
   TextEditingController _phoneController;
   bool _changesToSave = false;
   var settings;
 
-  final _crnController = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Future<List<dynamic>> getSettings(BuildContext ctx) async {
@@ -45,14 +41,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void save() async {
     final uid = FirebaseAuth.instance.currentUser.uid;
+    final email = FirebaseAuth.instance.currentUser.email;
 
     //const url = "https://cap1.herpin.net:5000/add";
     final url = "${globals.urlStem}/alterUser";
-    if (_emailNotifications == false) {
-      _email = "";
-    } else {
-      _email = _emailController.text.trim();
-    }
     if (_phoneNotifications == false) {
       _phone = "";
     } else {
@@ -60,10 +52,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
     final payload = jsonEncode({
       'uid': uid,
-      'email': _email,
+      'email': email,
       'phone': _phone,
       'name': '',
-      'notification': _pushNotifications.toString()
+      'notification': _enableNotifications.toString()
     });
     print(payload);
     final response = await http.post(url,
@@ -198,20 +190,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             "Cannot connect to server. Please check your internet and try again!");
                       } else {
                         //print(snapshot.data);
-                        if (_pushNotifications == null) {
+                        if (_enableNotifications == null) {
                           //print(snapshot.data[0]);
-                          _pushNotifications =
+                          _enableNotifications =
                               snapshot.data[0]["enableNotification"];
-                        }
-                        if (_email == null) {
-                          _email = snapshot.data[0]["emailAddress"];
-                          if (_email == '' || _email == null) {
-                            _emailNotifications = false;
-                          } else {
-                            _emailNotifications = true;
-                          }
-                          _emailController =
-                              TextEditingController(text: _email);
                         }
                         if (_phone == null) {
                           _phone = snapshot.data[0]["phoneNumber"];
@@ -228,47 +210,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text("Enable Push Notifications"),
+                                Text("Enable Notifications"),
                                 Switch(
-                                    value: _pushNotifications,
+                                    value: _enableNotifications,
                                     onChanged: (value) {
                                       _changesToSave = true;
-                                      _pushNotifications = value;
+                                      _enableNotifications = value;
                                       setState(() {});
                                     })
                               ],
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text("Enable Email Notifications"),
-                                Switch(
-                                    value: _emailNotifications,
-                                    onChanged: (value) {
-                                      _changesToSave = true;
-                                      _emailNotifications = value;
-                                      setState(() {});
-                                    })
-                              ],
-                            ),
-                            if (_emailNotifications)
-                              TextField(
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    gapPadding: 5.0,
-                                    borderRadius: const BorderRadius.all(
-                                      const Radius.circular(20.0),
-                                    ),
-                                  ),
-                                  labelText:
-                                      "Email Address for Email Notifications",
-                                ),
-                                controller: _emailController,
-                                onChanged: (value) => setState(() {
-                                  _changesToSave = true;
-                                }),
-                              ),
-
                             //Text Notifications Settings
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
