@@ -95,15 +95,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
                       height: 350,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              // Color(0xFF200000),
-                              // Color(0xFF800000),
-                              Colors.green,
-                              Colors.lightGreen
-                            ]),
+                        gradient: globals.tamuGradient,
                         image: DecorationImage(
                             image: AssetImage("assets/images/tamu_logo.png")),
                       ),
@@ -138,6 +130,9 @@ class _ClassesScreenState extends State<ClassesScreen> {
                               snapshot.data[i]["id"].toString(),
                               snapshot.data[i]["CRN"].toString(),
                               snapshot.data[i]["Title"].toString(),
+                              snapshot.data[i]["Subj"].toString(),
+                              snapshot.data[i]["Crse"].toString(),
+                              snapshot.data[i]["Sec"].toString(),
                               snapshot.data[i]["Instructor"].toString(),
                               snapshot.data[i]["Cap"].toString(),
                               snapshot.data[i]["Rem"].toString(),

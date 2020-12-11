@@ -33,7 +33,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     //final url = "http://cap1.herpin.net:5000/current?uid=$uid";
     final url = "${globals.urlStem}/user?uid=$uid";
     final settingsJson = await http.get(url);
-    print(settingsJson);
+    print(settingsJson.body);
     final settings = json.decode(settingsJson.body);
     //print(settings);
     return settings;
@@ -131,16 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text("Settings"),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                // Color(0xFF400000),
-                // Color(0xFF900000),
-                Colors.green,
-                Colors.lightGreen,
-              ],
-            ),
+            gradient: globals.tamuGradient,
           ),
         ),
         actions: [

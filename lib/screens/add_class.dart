@@ -29,7 +29,8 @@ class _AddClassScreenState extends State<AddClassScreen> {
       myTimer.cancel();
     }
     if (json.decode(payload)["subj"] == "" &&
-        json.decode(payload)["crse"] == "") {
+        json.decode(payload)["crse"] == "" &&
+        json.decode(payload)["crn"] == "") {
       setState(() {
         courseSuggestions = [];
       });
@@ -63,23 +64,13 @@ class _AddClassScreenState extends State<AddClassScreen> {
       print("Course Title" + courseSuggestions[0]["Title"].toString());
     }
 
-    var linearGradient = LinearGradient(
-      begin: Alignment.bottomCenter,
-      end: Alignment.topCenter,
-      colors: [
-        // Color(0xFF400000),
-        // Color(0xFF900000),
-        Colors.green,
-        Colors.lightGreen,
-      ],
-    );
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Add a New Class"),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: linearGradient,
+            gradient: globals.tamuGradient,
           ),
         ),
       ),
@@ -103,6 +94,16 @@ class _AddClassScreenState extends State<AddClassScreen> {
                   labelText: "CRN",
                 ),
                 controller: _crnController,
+                // onChanged: (value) {
+                //   final uid = FirebaseAuth.instance.currentUser.uid;
+                //   final payload = jsonEncode({
+                //     'crn': value.toString(),
+                //     'subj': "",
+                //     'crse': "",
+                //     'uid': uid
+                //   });
+                //   fullQuerySearch(payload);
+                // },
                 onSubmitted: (inputCRN) async {
                   final crn = inputCRN.trim();
                   if (crn.length != 5) {
@@ -172,6 +173,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
                   final uid = FirebaseAuth.instance.currentUser.uid;
 
                   final payload = jsonEncode({
+                    'crn': "",
                     'subj': value,
                     'crse': _crseController.text.toString(),
                     'uid': uid
@@ -231,14 +233,15 @@ class _AddClassScreenState extends State<AddClassScreen> {
                   ),
                   child: Container(
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(width: 2)),
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(width: 2),
+                    ),
                     padding: EdgeInsets.all(10.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         SizedBox(
-                          width: screenWidth < 500 ? 265 : null,
+                          width: screenWidth < 500 ? 250 : null,
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -262,9 +265,10 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                     SizedBox(width: 5),
                                   ],
                                 ),
-                                Text("CRN: " + courseSuggestions[index]["CRN"]),
                                 Text("Instructor: " +
                                     courseSuggestions[index]["Instructor"]),
+                                Text("CRN: " + courseSuggestions[index]["CRN"]),
+                                Text("Rem: " + courseSuggestions[index]["Rem"]),
                               ]),
                         ),
                         SizedBox(width: 5),
@@ -309,6 +313,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                               final url2 =
                                                   "${globals.urlStem}/fullQuery";
                                               final payload2 = jsonEncode({
+                                                'crn': "",
                                                 'subj': _subjController.text
                                                     .toString(),
                                                 'crse': _crseController.text
@@ -332,7 +337,9 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                       icon: courseSuggestions[index]["added"] ==
                                               'true'
                                           ? Icon(Icons.check)
-                                          : Icon(Icons.add),
+                                          : Icon(
+                                              Icons.add,
+                                            ),
                                     ),
                                   )
                                 : RaisedButton.icon(
@@ -366,6 +373,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                             final url2 =
                                                 "${globals.urlStem}/fullQuery";
                                             final payload2 = jsonEncode({
+                                              'crn': "",
                                               'subj': _subjController.text
                                                   .toString(),
                                               'crse': _crseController.text
@@ -389,11 +397,18 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                     icon: courseSuggestions[index]["added"] ==
                                             'true'
                                         ? Icon(Icons.check)
-                                        : Icon(Icons.add),
+                                        : Icon(
+                                            Icons.add,
+                                            color: Colors.white,
+                                          ),
                                     label: courseSuggestions[index]["added"] ==
                                             'true'
                                         ? Text("Added")
-                                        : Text("Add Class"),
+                                        : Text(
+                                            "Add Class",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
                                   ),
                             SizedBox(height: 10),
                             if (courseSuggestions[index]["added"] == 'true')
@@ -430,6 +445,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                           final url2 =
                                               "${globals.urlStem}/fullQuery";
                                           final payload2 = jsonEncode({
+                                            'crn': "",
                                             'subj':
                                                 _subjController.text.toString(),
                                             'crse':
@@ -477,6 +493,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                         final url2 =
                                             "${globals.urlStem}/fullQuery";
                                         final payload2 = jsonEncode({
+                                          'crn': "",
                                           'subj':
                                               _subjController.text.toString(),
                                           'crse':
@@ -495,8 +512,13 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                         });
                                         //Navigator.of(context).pop();
                                       },
-                                      icon: Icon(Icons.delete),
-                                      label: Text("Remove"),
+                                      icon: Icon(
+                                        Icons.delete,
+                                        color: Colors.white,
+                                      ),
+                                      label: Text("Remove",
+                                          style:
+                                              TextStyle(color: Colors.white)),
                                     )
                           ],
                         ),

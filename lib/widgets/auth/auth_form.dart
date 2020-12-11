@@ -1,6 +1,9 @@
-import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:apple_sign_in/apple_sign_in.dart';
+
+import 'package:flutter/src/foundation/platform.dart';
 
 class AuthForm extends StatefulWidget {
   final void Function(
@@ -13,9 +16,12 @@ class AuthForm extends StatefulWidget {
 
   final bool isLoading;
 
-  final void Function() signInwithGoogle;
+  final void Function() signInWithGoogle;
+  final void Function({List<Scope> scopes, BuildContext context})
+      signInWithApple;
 
-  AuthForm(this.submitFunction, this.signInwithGoogle, this.isLoading);
+  AuthForm(this.submitFunction, this.signInWithGoogle, this.signInWithApple,
+      this.isLoading);
 
   @override
   _AuthFormState createState() => _AuthFormState();
@@ -27,7 +33,6 @@ class _AuthFormState extends State<AuthForm> {
   String _userPhone = '';
   String _userPass;
   var _logInMode = true;
-  var _signInWithGoogle = true;
 
   void _trySubmit() {
     final isValid = _formKey.currentState.validate();
@@ -48,6 +53,7 @@ class _AuthFormState extends State<AuthForm> {
 
   @override
   Widget build(BuildContext context) {
+    var platform = Theme.of(context).platform;
     return Center(
       child: Container(
         constraints: BoxConstraints(maxWidth: 600),
@@ -61,90 +67,91 @@ class _AuthFormState extends State<AuthForm> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      "Authenticate with Google (Recommended)",
-                      textAlign: TextAlign.center,
-                      softWrap: true,
-                      style: TextStyle(
-                        fontFamily: "Poppins",
-                        fontSize: 20,
-                        //decoration: TextDecoration.underline,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Container(
-                      constraints: BoxConstraints(maxWidth: 420),
-                      child: OutlineButton(
-                        color: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(40.0),
-                        ),
-                        borderSide: BorderSide(color: Colors.grey),
-                        onPressed: () {
-                          widget.signInwithGoogle();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image(
-                                image:
-                                    AssetImage("assets/images/google_logo.png"),
-                                height: 30,
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                "Sign in with Google",
-                                softWrap: true,
-                                style: TextStyle(
-                                  fontFamily: "Poppins",
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                  //decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Container(
-                            height: 2,
-                            width: 50,
-                            color: Colors.black,
-                          ),
-                        ),
-                        Text(
-                          "OR",
-                          style: TextStyle(
-                            fontFamily: "Poppins",
-                            fontSize: 25,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Container(
-                            height: 2,
-                            width: 50,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
+                    // Text(
+                    //   "Authenticate with Google (Recommended)",
+                    //   textAlign: TextAlign.center,
+                    //   softWrap: true,
+                    //   style: TextStyle(
+                    //     fontFamily: "Poppins",
+                    //     fontSize: 20,
+                    //     //decoration: TextDecoration.underline,
+                    //   ),
+                    // ),
+                    // SizedBox(height: 10),
+                    // Container(
+                    //   constraints: BoxConstraints(maxWidth: 420),
+                    //   child: OutlineButton(
+                    //     color: Colors.white,
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(40.0),
+                    //     ),
+                    //     borderSide: BorderSide(color: Colors.grey),
+                    //     onPressed: () {
+                    //       widget.signInWithGoogle();
+                    //     },
+                    //     child: Padding(
+                    //       padding: const EdgeInsets.all(8.0),
+                    //       child: Row(
+                    //         mainAxisAlignment: MainAxisAlignment.center,
+                    //         children: [
+                    //           Image(
+                    //             image:
+                    //                 AssetImage("assets/images/google_logo.png"),
+                    //             height: 30,
+                    //           ),
+                    //           SizedBox(width: 10),
+                    //           Text(
+                    //             "Sign in with Google",
+                    //             softWrap: true,
+                    //             style: TextStyle(
+                    //               fontFamily: "Poppins",
+                    //               fontSize: 18,
+                    //               color: Colors.black,
+                    //               //decoration: TextDecoration.underline,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 20),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Padding(
+                    //       padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    //       child: Container(
+                    //         height: 2,
+                    //         width: 50,
+                    //         color: Colors.black,
+                    //       ),
+                    //     ),
+                    //     Text(
+                    //       "OR",
+                    //       style: TextStyle(
+                    //         fontFamily: "Poppins",
+                    //         fontSize: 25,
+                    //       ),
+                    //     ),
+                    //     Padding(
+                    //       padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    //       child: Container(
+                    //         height: 2,
+                    //         width: 50,
+                    //         color: Colors.black,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           "Sign in with Email & Password",
                           style: TextStyle(
+                            color: Theme.of(context).primaryColor,
                             fontFamily: "Poppins",
                             fontSize: 20,
                             //decoration: TextDecoration.underline,
@@ -220,7 +227,7 @@ class _AuthFormState extends State<AuthForm> {
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
-                    SizedBox(height: 10),
+                    //SizedBox(height: 10),
                     if (!widget.isLoading)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -232,7 +239,7 @@ class _AuthFormState extends State<AuthForm> {
                               });
                             },
                             child: Text(_logInMode
-                                ? "Create New Account"
+                                ? "Sign Up Instead"
                                 : "Log In Instead"),
                             textColor: Theme.of(context).primaryColor,
                           ),
@@ -285,11 +292,95 @@ class _AuthFormState extends State<AuthForm> {
                                 });
                               }
                             },
-                            child: Text("Forgot Password"),
+                            child: Text(
+                              "Forgot Password",
+                              overflow: TextOverflow.clip,
+                            ),
                             textColor: Theme.of(context).errorColor,
                           ),
                         ],
-                      )
+                      ),
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 420),
+                      child: OutlineButton(
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40.0),
+                        ),
+                        borderSide: BorderSide(color: Colors.grey),
+                        onPressed: () {
+                          widget.signInWithGoogle();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image(
+                                image:
+                                    AssetImage("assets/images/google_logo.png"),
+                                height: 30,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "Sign in with Google",
+                                softWrap: true,
+                                style: TextStyle(
+                                  fontFamily: "Poppins",
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                  //decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    if (platform == TargetPlatform.iOS)
+                      Column(
+                        children: [
+                          Container(
+                            constraints: BoxConstraints(maxWidth: 420),
+                            child: OutlineButton(
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(40.0),
+                              ),
+                              borderSide: BorderSide(color: Colors.grey),
+                              onPressed: () {
+                                widget.signInWithApple(context: context);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image(
+                                      image: AssetImage(
+                                          "assets/images/apple_logo.png"),
+                                      height: 30,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      "Sign in with Apple  ",
+                                      softWrap: true,
+                                      style: TextStyle(
+                                        fontFamily: "Poppins",
+                                        fontSize: 18,
+                                        color: Colors.black,
+                                        //decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                        ],
+                      ),
                   ],
                 ),
               ),

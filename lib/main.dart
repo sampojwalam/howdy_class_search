@@ -8,6 +8,7 @@ import './screens/classes_screen.dart';
 import './screens/add_class.dart';
 import './screens/auth_screen.dart';
 import './screens/settings_screen.dart';
+import './models/globals.dart' as globals;
 
 void main() => runApp(MyApp());
 
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Howdy Class Search',
       theme: ThemeData(
-        primaryColor: /*Color(0xFF500000)*/ Colors.green,
+        primaryColor: globals.primaryColor,
         scaffoldBackgroundColor: Color(0xFFFEFEFE),
         fontFamily: "Poppins",
         textTheme: TextTheme(

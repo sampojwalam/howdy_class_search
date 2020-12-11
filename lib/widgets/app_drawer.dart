@@ -4,6 +4,7 @@ import 'package:howdy_class_search/screens/auth_screen.dart';
 
 import '../screens/classes_screen.dart';
 import '../screens/settings_screen.dart';
+import '../models/globals.dart' as globals;
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -14,16 +15,7 @@ class AppDrawer extends StatelessWidget {
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [
-                  // Color(0xFF400000),
-                  // Color(0xFF900000),
-                  Colors.green,
-                  Colors.lightGreen,
-                ],
-              ),
+              gradient: globals.tamuGradient,
             ),
             height: MediaQuery.of(context).viewPadding.top + 50,
             child: Column(

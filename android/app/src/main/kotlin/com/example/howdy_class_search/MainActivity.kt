@@ -1,4 +1,4 @@
-package com.example.howdy_class_search
+package net.herpin.howdy_class_search
 
 import io.flutter.embedding.android.FlutterActivity
 

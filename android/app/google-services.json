@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:387502356837:android:fe6b6d8fc3e925fdc3c98c",
+        "mobilesdk_app_id": "1:387502356837:android:5326769609238aaac3c98c",
         "android_client_info": {
-          "package_name": "com.example.howdy_class_search"
+          "package_name": "net.herpin.howdy_class_search"
         }
       },
       "oauth_client": [
@@ -32,10 +32,10 @@
               "client_type": 3
             },
             {
-              "client_id": "387502356837-c0ichirj05s55m7fhijnidffl6uekdvg.apps.googleusercontent.com",
+              "client_id": "387502356837-hub45arc19b9k8ij4fgmg9jm8rfa59j2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.howdyClassSearch"
+                "bundle_id": "net.herpin.howdyClassSearch"
               }
             }
           ]

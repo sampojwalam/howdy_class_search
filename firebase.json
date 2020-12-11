@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "howdy-class-search-dev",
+    "site": "howdy-class-search",
     "public": "build/web",
     "ignore": [
       "firebase.json",

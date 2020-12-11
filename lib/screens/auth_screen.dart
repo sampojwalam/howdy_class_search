@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,6 +9,8 @@ import 'package:howdy_class_search/screens/classes_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/services.dart';
+import 'package:apple_sign_in/apple_sign_in.dart';
 
 import '../models/globals.dart' as globals;
 import '../widgets/auth/auth_form.dart';
@@ -87,6 +90,101 @@ class _AuthScreenState extends State<AuthScreen> {
       }
 
       Navigator.of(context).pushNamed(ClassesScreen.routeName);
+    }
+  }
+
+  void _signInWithApple(
+      {List<Scope> scopes = const [], BuildContext context}) async {
+    // 1. perform the sign-in request
+    final result = await AppleSignIn.performRequests(
+        [AppleIdRequest(requestedScopes: scopes)]);
+    // 2. check the result
+    print(result);
+    switch (result.status) {
+      case AuthorizationStatus.authorized:
+        final appleIdCredential = result.credential;
+        final oAuthProvider = OAuthProvider('apple.com');
+        final credential = oAuthProvider.credential(
+          idToken: String.fromCharCodes(appleIdCredential.identityToken),
+          accessToken:
+              String.fromCharCodes(appleIdCredential.authorizationCode),
+        );
+        final authResult = await _auth.signInWithCredential(credential);
+        final firebaseUser = authResult.user;
+        if (scopes.contains(Scope.fullName)) {
+          final displayName =
+              '${appleIdCredential.fullName.givenName} ${appleIdCredential.fullName.familyName}';
+          await firebaseUser.updateProfile(displayName: displayName);
+        }
+        final uid = firebaseUser.uid;
+        final email = firebaseUser.email;
+        final phone =
+            firebaseUser.phoneNumber == null ? '' : firebaseUser.phoneNumber;
+
+        final url = "${globals.urlStem}/addUser";
+        final payload = jsonEncode({
+          'uid': uid,
+          'email': email,
+          'phone': phone,
+          'name': '',
+          'notification': '1'
+        });
+        final response = await http
+            .post(url,
+                headers: {'Content-Type': 'application/json'}, body: payload)
+            .catchError((error) {
+          print("User exists. Logging in.");
+        });
+
+        final urlLogin = "${globals.urlStem}/login";
+        final responseLogin = await http.get(urlLogin);
+
+        print("is web ?................................ $kIsWeb");
+
+        if (!kIsWeb) {
+          FirebaseMessaging fbmInstance = FirebaseMessaging();
+          fbmInstance.requestNotificationPermissions();
+          fbmInstance.configure(onMessage: (msg) {
+            return;
+          }, onLaunch: (msg) {
+            return;
+          }, onResume: (msg) {
+            return;
+          });
+          fbmInstance.subscribeToTopic("$uid");
+        }
+
+        Navigator.of(context).pushNamed(ClassesScreen.routeName);
+
+        break;
+      case AuthorizationStatus.error:
+        showDialog(
+          context: context,
+          child: CupertinoAlertDialog(
+            title: Text("Apple Sign In Failed"),
+            content: Text(
+              "Something went wrong. Please try again.",
+            ),
+            actions: [
+              CupertinoDialogAction(
+                child: Text("Ok"),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+        );
+        throw PlatformException(
+          code: 'ERROR_AUTHORIZATION_DENIED',
+          message: result.error.toString(),
+        );
+
+      case AuthorizationStatus.cancelled:
+        throw PlatformException(
+          code: 'ERROR_ABORTED_BY_USER',
+          message: 'Sign in aborted by user',
+        );
+      default:
+        throw UnimplementedError();
     }
   }
 
@@ -180,7 +278,8 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      body: AuthForm(_submitAuthForm, _signInWithGoogle, _isLoading),
+      body: AuthForm(
+          _submitAuthForm, _signInWithGoogle, _signInWithApple, _isLoading),
     );
   }
 }
