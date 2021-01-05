@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:howdy_class_search/screens/help_screen.dart';
 
 import './screens/classes_screen.dart';
 import './screens/add_class.dart';
@@ -60,6 +61,7 @@ class MyApp extends StatelessWidget {
         ClassesScreen.routeName: (ctx) => ClassesScreen(),
         SettingsScreen.routeName: (ctx) => SettingsScreen(),
         AuthScreen.routeName: (ctx) => AuthScreen(),
+        HelpScreen.routeName: (ctx) => HelpScreen(),
       },
     );
   }

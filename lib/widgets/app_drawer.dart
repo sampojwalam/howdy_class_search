@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:howdy_class_search/screens/auth_screen.dart';
+import 'package:howdy_class_search/screens/help_screen.dart';
 
 import '../screens/classes_screen.dart';
 import '../screens/settings_screen.dart';
@@ -54,6 +55,11 @@ class AppDrawer extends StatelessWidget {
             title: Text("Settings"),
             onTap: () =>
                 Navigator.of(context).pushNamed(SettingsScreen.routeName),
+          ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text("Help"),
+            onTap: () => Navigator.of(context).pushNamed(HelpScreen.routeName),
           ),
           Divider(),
           ListTile(

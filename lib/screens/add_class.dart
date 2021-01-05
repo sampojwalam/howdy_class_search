@@ -19,6 +19,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
   final _crnController = TextEditingController();
   final _subjController = TextEditingController();
   final _crseController = TextEditingController();
+  final _queryController = TextEditingController();
   var courseSuggestions = [];
   Timer myTimer;
   String myStr;
@@ -29,7 +30,8 @@ class _AddClassScreenState extends State<AddClassScreen> {
       myTimer.cancel();
     }
     if (json.decode(payload)["subj"] == "" &&
-        json.decode(payload)["crse"] == "") {
+        json.decode(payload)["crse"] == "" &&
+        json.decode(payload)["query"] == "") {
       setState(() {
         courseSuggestions = [];
       });
@@ -193,16 +195,18 @@ class _AddClassScreenState extends State<AddClassScreen> {
                       const Radius.circular(20.0),
                     ),
                   ),
-                  labelText: "Course",
+                  labelText: "General Search",
                 ),
-                controller: _crseController,
+                controller: _queryController,
                 onChanged: (value) async {
                   final uid = FirebaseAuth.instance.currentUser.uid;
                   final payload = jsonEncode({
                     'subj': _subjController.text.toString(),
-                    'crse': value,
-                    'uid': uid
+                    'crse': _crseController.text.toString(),
+                    'uid': uid,
+                    'query': value
                   });
+                  print("General querey: " + payload);
                   fullQuerySearch(payload);
                 },
               ),
