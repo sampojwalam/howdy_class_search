@@ -32,10 +32,10 @@
               "client_type": 3
             },
             {
-              "client_id": "387502356837-hub45arc19b9k8ij4fgmg9jm8rfa59j2.apps.googleusercontent.com",
+              "client_id": "387502356837-c0ichirj05s55m7fhijnidffl6uekdvg.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "net.herpin.howdyClassSearch"
+                "bundle_id": "com.example.howdyClassSearch"
               }
             }
           ]

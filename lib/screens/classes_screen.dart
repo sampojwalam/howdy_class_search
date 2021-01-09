@@ -2,10 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:howdy_class_search/screens/settings_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_client/http_client.dart';
 
+import './auth_screen.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/class_card.dart';
 import '../widgets/invalid_class_card.dart';
@@ -57,108 +60,234 @@ class _ClassesScreenState extends State<ClassesScreen> {
           setState(() {});
         }),
       ),
-      drawer: AppDrawer(),
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            // leading: IconButton(
-            //     icon: Icon(Icons.menu),
-            //     onPressed: () {
-            //       print("work in progress");
-            //     }),
-            actions: [
-              IconButton(
-                  icon: Icon(
-                    Icons.refresh,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    setState(() {});
-                  }),
-            ],
-            expandedHeight: 350,
-            pinned: true,
-            flexibleSpace: LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-              top = constraints.biggest.height;
-              return FlexibleSpaceBar(
-                title: Text(
-                  top > 150 ? "" : "Howdy Class Search",
-                ),
-                background: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: ClipPath(
-                    clipper: MyClipper(),
-                    child: Container(
-                      height: 350,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: globals.tamuGradient,
-                        image: DecorationImage(
-                            image: AssetImage("assets/images/tamu_logo.png")),
-                      ),
+      drawer: kIsWeb ? null : AppDrawer(),
+      body: Row(
+        children: [
+          if (kIsWeb)
+            Container(
+              width: 100,
+              color: Theme.of(context).primaryColor,
+              child: Column(
+                children: [
+                  SizedBox(height: 20),
+                  Container(
+                    width: 60,
+                    child: Image(
+                      image: AssetImage("assets/images/logo_icon.png"),
                     ),
                   ),
-                ),
-              );
-            }),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-
-                //Testing json -> class object conversion
-                child: FutureBuilder(
-                  future: classesList,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      print(snapshot.error);
-                    }
-                    if (snapshot.hasData) {
-                      List<Widget> classCards = [];
-                      classCards.add(
-                        Text(
-                            "Currently tracking ${snapshot.data.length} classes."),
+                  SizedBox(height: MediaQuery.of(context).size.height / 5),
+                  Row(
+                    children: [
+                      Container(
+                        width: 5,
+                        height: 70,
+                        color: Colors.blue,
+                      ),
+                      Container(
+                        width: 95,
+                        height: 70,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.home,
+                            color: Colors.blue,
+                            size: 40,
+                          ),
+                          onPressed: () {
+                            //do nothing.
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        width: 5,
+                        height: 70,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      Container(
+                        width: 95,
+                        height: 70,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.calendar_today,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () {
+                            // Navigator.of(context).pushReplacementNamed(routeName)
+                            print("hi");
+                            print(MediaQuery.of(context).size.height);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        width: 5,
+                        height: 70,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      Container(
+                        width: 95,
+                        height: 70,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.settings,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushReplacementNamed(SettingsScreen.routeName);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        width: 5,
+                        height: 70,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      Container(
+                        width: 95,
+                        height: 70,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.exit_to_app,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () {
+                            FirebaseAuth.instance.signOut();
+                            Navigator.of(context)
+                                .pushNamed(AuthScreen.routeName);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                ],
+              ),
+            ),
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                if (!kIsWeb)
+                  SliverAppBar(
+                    // leading: IconButton(
+                    //     icon: Icon(Icons.menu),
+                    //     onPressed: () {
+                    //       print("work in progress");
+                    //     }),
+                    actions: [
+                      IconButton(
+                          icon: Icon(
+                            Icons.refresh,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            setState(() {});
+                          }),
+                    ],
+                    expandedHeight: 350,
+                    pinned: true,
+                    flexibleSpace: LayoutBuilder(builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      top = constraints.biggest.height;
+                      return FlexibleSpaceBar(
+                        title: Text(
+                          top > 150 ? "" : "Howdy Class Search",
+                        ),
+                        background: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                          ),
+                          child: ClipPath(
+                            clipper: MyClipper(),
+                            child: Container(
+                              height: 350,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                gradient: globals.tamuGradient,
+                                image: DecorationImage(
+                                    image:
+                                        AssetImage("assets/images/logo.png")),
+                              ),
+                            ),
+                          ),
+                        ),
                       );
-                      for (var i = 0; i < snapshot.data.length; i++) {
-                        if (snapshot.data[i]["valid"] == "true") {
-                          classCards.add(
-                            ClassCard(
-                              snapshot.data[i]["id"].toString(),
-                              snapshot.data[i]["CRN"].toString(),
-                              snapshot.data[i]["Title"].toString(),
-                              snapshot.data[i]["Subj"].toString(),
-                              snapshot.data[i]["Crse"].toString(),
-                              snapshot.data[i]["Sec"].toString(),
-                              snapshot.data[i]["Instructor"].toString(),
-                              snapshot.data[i]["Cap"].toString(),
-                              snapshot.data[i]["Rem"].toString(),
-                              refresh,
-                            ),
-                          );
-                        } else {
-                          classCards.add(
-                            InvalidClassCard(
-                              snapshot.data[i]["userCRN"].toString(),
-                              refresh,
-                            ),
-                          );
-                        }
-                      }
-                      return Column(children: classCards);
-                    } else {
-                      return Column(children: [
-                        SizedBox(height: 20),
-                        CircularProgressIndicator()
-                      ]);
-                    }
-                  },
+                    }),
+                  ),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+
+                      //Testing json -> class object conversion
+                      child: FutureBuilder(
+                        future: classesList,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            print(snapshot.error);
+                          }
+                          if (snapshot.hasData) {
+                            List<Widget> classCards = [];
+                            classCards.add(
+                              Text(
+                                  "Currently tracking ${snapshot.data.length} classes."),
+                            );
+                            for (var i = 0; i < snapshot.data.length; i++) {
+                              if (snapshot.data[i]["valid"] == "true") {
+                                classCards.add(
+                                  ClassCard(
+                                    snapshot.data[i]["id"].toString(),
+                                    snapshot.data[i]["CRN"].toString(),
+                                    snapshot.data[i]["Title"].toString(),
+                                    snapshot.data[i]["Subj"].toString(),
+                                    snapshot.data[i]["Crse"].toString(),
+                                    snapshot.data[i]["Sec"].toString(),
+                                    snapshot.data[i]["Instructor"].toString(),
+                                    snapshot.data[i]["Cap"].toString(),
+                                    snapshot.data[i]["Rem"].toString(),
+                                    refresh,
+                                  ),
+                                );
+                              } else {
+                                classCards.add(
+                                  InvalidClassCard(
+                                    snapshot.data[i]["userCRN"].toString(),
+                                    refresh,
+                                  ),
+                                );
+                              }
+                            }
+                            return Column(children: classCards);
+                          } else {
+                            return Column(children: [
+                              SizedBox(height: 20),
+                              CircularProgressIndicator()
+                            ]);
+                          }
+                        },
+                      ),
+                    )
+                  ]),
                 ),
-              )
-            ]),
+              ],
+            ),
           ),
         ],
       ),

@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:howdy_class_search/screens/classes_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -14,6 +13,8 @@ import 'package:apple_sign_in/apple_sign_in.dart';
 
 import '../models/globals.dart' as globals;
 import '../widgets/auth/auth_form.dart';
+import './classes_screen.dart';
+import './verify_email_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   static const routeName = '/auth-screen';
@@ -89,26 +90,32 @@ class _AuthScreenState extends State<AuthScreen> {
         fbmInstance.subscribeToTopic("$uid");
       }
 
-      Navigator.of(context).pushNamed(ClassesScreen.routeName);
+      Navigator.of(context).pushReplacementNamed(ClassesScreen.routeName);
     }
   }
 
   void _signInWithApple(
       {List<Scope> scopes = const [], BuildContext context}) async {
     // 1. perform the sign-in request
-    final result = await AppleSignIn.performRequests(
-        [AppleIdRequest(requestedScopes: scopes)]);
+
+    final result = await AppleSignIn.performRequests([
+      AppleIdRequest(
+        requestedScopes: [Scope.email, Scope.fullName],
+      ),
+    ]);
     // 2. check the result
-    print(result);
+
     switch (result.status) {
       case AuthorizationStatus.authorized:
         final appleIdCredential = result.credential;
+
         final oAuthProvider = OAuthProvider('apple.com');
         final credential = oAuthProvider.credential(
           idToken: String.fromCharCodes(appleIdCredential.identityToken),
           accessToken:
               String.fromCharCodes(appleIdCredential.authorizationCode),
         );
+
         final authResult = await _auth.signInWithCredential(credential);
         final firebaseUser = authResult.user;
         if (scopes.contains(Scope.fullName)) {
@@ -116,6 +123,7 @@ class _AuthScreenState extends State<AuthScreen> {
               '${appleIdCredential.fullName.givenName} ${appleIdCredential.fullName.familyName}';
           await firebaseUser.updateProfile(displayName: displayName);
         }
+
         final uid = firebaseUser.uid;
         final email = firebaseUser.email;
         final phone =
@@ -154,7 +162,7 @@ class _AuthScreenState extends State<AuthScreen> {
           fbmInstance.subscribeToTopic("$uid");
         }
 
-        Navigator.of(context).pushNamed(ClassesScreen.routeName);
+        Navigator.of(context).pushReplacementNamed(ClassesScreen.routeName);
 
         break;
       case AuthorizationStatus.error:
@@ -206,7 +214,15 @@ class _AuthScreenState extends State<AuthScreen> {
           .then((value) async {
         final url = "${globals.urlStem}/login";
         final response = await http.get(url);
-        Navigator.of(context).pushNamed(ClassesScreen.routeName);
+
+        final user = _auth.currentUser;
+        await user.reload();
+        if (user.emailVerified) {
+          Navigator.of(context).pushReplacementNamed(ClassesScreen.routeName);
+        } else {
+          Navigator.of(context)
+              .pushReplacementNamed(VerifyEmailScreen.routeName);
+        }
       }).catchError(
         (error) {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -227,6 +243,7 @@ class _AuthScreenState extends State<AuthScreen> {
       _auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) async {
+        Navigator.of(context).pushReplacementNamed(VerifyEmailScreen.routeName);
         final uid = FirebaseAuth.instance.currentUser.uid;
         //print(uid);
         //const url = "https://cap1.herpin.net:5000/add";
@@ -253,8 +270,6 @@ class _AuthScreenState extends State<AuthScreen> {
           });
           fbmInstance.subscribeToTopic("$uid");
         }
-
-        Navigator.of(context).pushNamed(ClassesScreen.routeName);
       }).catchError(
         (error) {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -276,10 +291,72 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: AuthForm(
-          _submitAuthForm, _signInWithGoogle, _signInWithApple, _isLoading),
-    );
+    final screenWidth = MediaQuery.of(context).size.width;
+    if (kIsWeb && screenWidth > 1300) {
+      return Scaffold(
+        body: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            final currentWidth = constraints.maxWidth;
+            return Container(
+              child: Stack(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: currentWidth - 500,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      Container(
+                        width: 500,
+                        color: Color(0xFFEBEBEB),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: currentWidth - 750,
+                      ),
+                      AuthForm(_submitAuthForm, _signInWithGoogle,
+                          _signInWithApple, _isLoading),
+                    ],
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 100,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Welcome",
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 100),
+                          ),
+                          Text(
+                            "Sign in to continue...",
+                            style: TextStyle(color: Colors.white, fontSize: 40),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
+    } else {
+      return Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        body: AuthForm(
+            _submitAuthForm, _signInWithGoogle, _signInWithApple, _isLoading),
+      );
+    }
   }
 }

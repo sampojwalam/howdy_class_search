@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:apple_sign_in/apple_sign_in.dart';
@@ -56,7 +57,7 @@ class _AuthFormState extends State<AuthForm> {
     var platform = Theme.of(context).platform;
     return Center(
       child: Container(
-        constraints: BoxConstraints(maxWidth: 600),
+        constraints: BoxConstraints(maxWidth: kIsWeb ? 500 : 600),
         child: Card(
           margin: EdgeInsets.all(20),
           child: SingleChildScrollView(
@@ -215,7 +216,7 @@ class _AuthFormState extends State<AuthForm> {
                       },
                     ),
                     SizedBox(
-                      height: 12,
+                      height: kIsWeb ? 20 : 12,
                     ),
                     if (widget.isLoading) CircularProgressIndicator(),
                     if (!widget.isLoading)
@@ -228,6 +229,10 @@ class _AuthFormState extends State<AuthForm> {
                         ),
                       ),
                     //SizedBox(height: 10),
+
+                    SizedBox(
+                      height: kIsWeb ? 10 : 0,
+                    ),
                     if (!widget.isLoading)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -275,20 +280,29 @@ class _AuthFormState extends State<AuthForm> {
                                     ),
                                   );
                                 }).catchError((error) {
+                                  var scaffoldMessage;
                                   print(error);
-                                  if (error.toString().trim() ==
-                                      "FirebaseError: The email address is badly formatted. (auth/invalid-email)") {
-                                    ScaffoldMessenger.of(context)
-                                        .removeCurrentSnackBar();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        backgroundColor:
-                                            Theme.of(context).errorColor,
-                                        content: Text(
-                                            "No account exists with that email."),
-                                      ),
-                                    );
+                                  if (error
+                                      .toString()
+                                      .trim()
+                                      .contains("Network error")) {
+                                    scaffoldMessage =
+                                        "Network error. Please check your internet connection.";
+                                  } else {
+                                    scaffoldMessage =
+                                        "No account exists with that email.";
                                   }
+                                  ScaffoldMessenger.of(context)
+                                      .removeCurrentSnackBar();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor:
+                                          Theme.of(context).errorColor,
+                                      content: Text(
+                                        scaffoldMessage,
+                                      ),
+                                    ),
+                                  );
                                 });
                               }
                             },
@@ -300,6 +314,7 @@ class _AuthFormState extends State<AuthForm> {
                           ),
                         ],
                       ),
+                    SizedBox(height: 10),
                     Container(
                       constraints: BoxConstraints(maxWidth: 420),
                       child: OutlineButton(
