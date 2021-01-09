@@ -16,18 +16,15 @@ class HelpScreen extends StatefulWidget {
 }
 
 class __HelpScreenStateState extends State<HelpScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Welcome to Flutter',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Welcome to Flutter'),
-        ),
-        body: Center(
-          child: Text('Hello World'),
-        ),
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: AppBar(
+        title: Text("Help"),
       ),
+      body: Text("Contact caleb.herpin@gmail.com for help."),
     );
   }
 }
