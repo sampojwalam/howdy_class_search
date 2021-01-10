@@ -47,17 +47,17 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.home),
             title: Text("Home"),
-            onTap: () =>
-                Navigator.of(context).pushNamed(ClassesScreen.routeName),
+            onTap: () => Navigator.of(context)
+                .pushReplacementNamed(ClassesScreen.routeName),
           ),
           ListTile(
             leading: Icon(Icons.settings),
             title: Text("Settings"),
-            onTap: () =>
-                Navigator.of(context).pushNamed(SettingsScreen.routeName),
+            onTap: () => Navigator.of(context)
+                .pushReplacementNamed(SettingsScreen.routeName),
           ),
           ListTile(
-            leading: Icon(Icons.settings),
+            leading: Icon(Icons.help),
             title: Text("Help"),
             onTap: () => Navigator.of(context).pushNamed(HelpScreen.routeName),
           ),
