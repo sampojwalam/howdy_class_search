@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:387502356837:android:fe6b6d8fc3e925fdc3c98c",
+        "mobilesdk_app_id": "1:387502356837:android:5326769609238aaac3c98c",
         "android_client_info": {
-          "package_name": "com.example.howdy_class_search"
+          "package_name": "net.herpin.howdy_class_search"
         }
       },
       "oauth_client": [

@@ -59,7 +59,8 @@ class _AddClassScreenState extends State<AddClassScreen> {
     }
     if (json.decode(payload)["subj"] == "" &&
         json.decode(payload)["crse"] == "" &&
-        json.decode(payload)["query"] == "") {
+        json.decode(payload)["query"] == "" &&
+        json.decode(payload)["crn"] == "") {
       setState(() {
         courseSuggestions = [];
       });
@@ -334,23 +335,13 @@ class _AddClassScreenState extends State<AddClassScreen> {
       print("Course Title" + courseSuggestions[0]["Title"].toString());
     }
 
-    var linearGradient = LinearGradient(
-      begin: Alignment.bottomCenter,
-      end: Alignment.topCenter,
-      colors: [
-        // Color(0xFF400000),
-        // Color(0xFF900000),
-        Colors.green,
-        Colors.lightGreen,
-      ],
-    );
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Add a New Class"),
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: linearGradient,
+            gradient: globals.tamuGradient,
           ),
         ),
       ),

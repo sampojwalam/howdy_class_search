@@ -1,8 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.howdy_class_search">
+    package="net.herpin.howdy_class_search">
+
+   <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="howdy_class_search"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Howdy Class Search"
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

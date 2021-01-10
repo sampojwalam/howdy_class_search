@@ -13,13 +13,16 @@ class ClassCard extends StatelessWidget {
   final String id;
   final String crn;
   final String title;
+  final String subj;
+  final String crse;
+  final String section;
   final String instructor;
   final String capacity;
   final String rem;
   Function updateClasses;
 
-  ClassCard(this.id, this.crn, this.title, this.instructor, this.capacity,
-      this.rem, this.updateClasses) {
+  ClassCard(this.id, this.crn, this.title, this.subj, this.crse, this.section,
+      this.instructor, this.capacity, this.rem, this.updateClasses) {
     globals.incrementable++;
   }
 
@@ -38,7 +41,7 @@ class ClassCard extends StatelessWidget {
         children: [
           Container(
             margin: EdgeInsets.only(bottom: 30.0),
-            height: 130.0,
+            height: 150.0,
             width: 15.0,
             decoration: BoxDecoration(
                 color: statusColor, //Change dynamically!!!!
@@ -50,7 +53,7 @@ class ClassCard extends StatelessWidget {
           Expanded(
             child: Container(
               margin: EdgeInsets.only(bottom: 30.0),
-              height: 130.0,
+              height: 150.0,
               decoration: BoxDecoration(
                 color: Color(0xFFF9F1F1),
               ),
@@ -70,6 +73,10 @@ class ClassCard extends StatelessWidget {
                           letterSpacing: 1.5),
                     ),
                     Text(
+                      "Course: " + subj + " " + crse + "-" + section,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
                       "Instructor: " + instructor,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -83,7 +90,6 @@ class ClassCard extends StatelessWidget {
                             Text("Spots Remaining: " + rem),
                           ],
                         ),
-                        PieChartView(),
                       ],
                     ),
                   ],
@@ -93,7 +99,7 @@ class ClassCard extends StatelessWidget {
           ),
           Container(
             margin: EdgeInsets.only(bottom: 30.0),
-            height: 130.0,
+            height: 150.0,
             width: 50.0,
             decoration: BoxDecoration(
               color: Color(0xFFF9F1F1),
@@ -162,26 +168,26 @@ class PieChartView extends StatelessWidget {
   }
 }
 
-class PieChart extends CustomPainter {
-  final int remaining;
-  final int capacity;
-  final double width;
+// class PieChart extends CustomPainter {
+//   final int remaining;
+//   final int capacity;
+//   final double width;
 
-  PieChart({this.capacity, this.remaining, this.width});
+//   PieChart({this.capacity, this.remaining, this.width});
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    Offset center = Offset(size.width / 2, size.height / 2);
-    double raidus = min(size.width / 2, size.height / 2);
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     Offset center = Offset(size.width / 2, size.height / 2);
+//     double raidus = min(size.width / 2, size.height / 2);
 
-    var paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = width / 2;
-  }
+//     var paint = Paint()
+//       ..style = PaintingStyle.stroke
+//       ..strokeWidth = width / 2;
+//   }
 
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    // TODO: implement shouldRepaint
-    throw UnimplementedError();
-  }
-}
+//   @override
+//   bool shouldRepaint(covariant CustomPainter oldDelegate) {
+//     // TODO: implement shouldRepaint
+//     throw UnimplementedError();
+//   }
+// }
