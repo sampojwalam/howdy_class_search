@@ -32,10 +32,12 @@ class _AddClassScreenState extends State<AddClassScreen> {
       msg = json.decode(strJson)["error"]["msg"];
     } catch (_) {}
 
-    _scaffoldKey.currentState.showSnackBar(SnackBar(
-      backgroundColor: Theme.of(context).errorColor,
-      content: Text("ERROR: " + msg),
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Theme.of(context).errorColor,
+        content: Text("ERROR: " + msg),
+      ),
+    );
     return;
   }
 
@@ -59,7 +61,6 @@ class _AddClassScreenState extends State<AddClassScreen> {
     }
     if (json.decode(payload)["subj"] == "" &&
         json.decode(payload)["crse"] == "" &&
-        json.decode(payload)["query"] == "" &&
         json.decode(payload)["crn"] == "") {
       setState(() {
         courseSuggestions = [];
@@ -104,7 +105,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
             'query': value
           });
           print("General querey: " + payload);
-          fullQuerySearch(payload);
+          //fullQuerySearch(payload);
         },
       ),
     );
@@ -359,6 +360,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
             RaisedButton.icon(
               onPressed: () async {
                 final crn = _crnController.text.trim();
+
                 if (crn.length != 5) {
                   _scaffoldKey.currentState.showSnackBar(SnackBar(
                     backgroundColor: Theme.of(context).errorColor,
@@ -366,13 +368,12 @@ class _AddClassScreenState extends State<AddClassScreen> {
                   ));
                   return;
                 }
+
                 final uid = FirebaseAuth.instance.currentUser.uid;
                 //const url = "https://cap1.herpin.net:5000/add";
                 final url = "${globals.urlStem}/add";
                 final payload = jsonEncode({'crn': crn, 'uid': uid});
-                final response = await http.post(url,
-                    headers: {'Content-Type': 'application/json'},
-                    body: payload);
+                final response = await myPost(url, payload);
                 Navigator.of(context).pop();
               },
               icon: Icon(

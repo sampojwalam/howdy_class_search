@@ -228,7 +228,9 @@ class _AuthScreenState extends State<AuthScreen> {
           ScaffoldMessenger.of(context).removeCurrentSnackBar();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Invalid credentials! Please try again!"),
+              content: Text(
+                "Invalid credentials! Please try again!",
+              ),
               backgroundColor: Theme.of(ctx).errorColor,
             ),
           );

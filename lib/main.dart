@@ -10,6 +10,7 @@ import './screens/classes_screen.dart';
 import './screens/add_class.dart';
 import './screens/auth_screen.dart';
 import './screens/settings_screen.dart';
+import './screens/schedule_screen.dart';
 import './models/globals.dart' as globals;
 
 void main() => runApp(MyApp());
@@ -71,6 +72,7 @@ class MyApp extends StatelessWidget {
         AuthScreen.routeName: (ctx) => AuthScreen(),
         HelpScreen.routeName: (ctx) => HelpScreen(),
         VerifyEmailScreen.routeName: (ctx) => VerifyEmailScreen(),
+        ScheduleScreen.routeName: (ctx) => ScheduleScreen(),
       },
     );
   }

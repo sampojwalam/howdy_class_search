@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:howdy_class_search/screens/auth_screen.dart';
-import 'package:howdy_class_search/screens/help_screen.dart';
 
+import '../screens/auth_screen.dart';
+import '../screens/help_screen.dart';
 import '../screens/classes_screen.dart';
 import '../screens/settings_screen.dart';
+import '../screens/schedule_screen.dart';
 import '../models/globals.dart' as globals;
 
 class AppDrawer extends StatelessWidget {
@@ -41,6 +42,12 @@ class AppDrawer extends StatelessWidget {
             title: Text("Home"),
             onTap: () => Navigator.of(context)
                 .pushReplacementNamed(ClassesScreen.routeName),
+          ),
+          ListTile(
+            leading: Icon(Icons.calendar_today),
+            title: Text("Schedule"),
+            onTap: () => Navigator.of(context)
+                .pushReplacementNamed(ScheduleScreen.routeName),
           ),
           ListTile(
             leading: Icon(Icons.settings),

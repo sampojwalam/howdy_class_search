@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:howdy_class_search/screens/help_screen.dart';
+import 'package:howdy_class_search/screens/schedule_screen.dart';
 import 'package:howdy_class_search/screens/settings_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_client/http_client.dart';
@@ -23,6 +25,7 @@ class ClassesScreen extends StatefulWidget {
 
 class _ClassesScreenState extends State<ClassesScreen> {
   var top = 0.0;
+  var classesNum;
 
   //Testing json -> class object conversion
   Future<List<dynamic>> getJson(BuildContext ctx) async {
@@ -118,9 +121,8 @@ class _ClassesScreenState extends State<ClassesScreen> {
                             size: 40,
                           ),
                           onPressed: () {
-                            // Navigator.of(context).pushReplacementNamed(routeName)
-                            print("hi");
-                            print(MediaQuery.of(context).size.height);
+                            Navigator.of(context)
+                                .pushReplacementNamed(ScheduleScreen.routeName);
                           },
                         ),
                       ),
@@ -146,6 +148,31 @@ class _ClassesScreenState extends State<ClassesScreen> {
                           onPressed: () {
                             Navigator.of(context)
                                 .pushReplacementNamed(SettingsScreen.routeName);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        width: 5,
+                        height: 70,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      Container(
+                        width: 95,
+                        height: 70,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.help,
+                            color: Colors.white,
+                            size: 40,
+                          ),
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushReplacementNamed(HelpScreen.routeName);
                           },
                         ),
                       ),
@@ -245,10 +272,11 @@ class _ClassesScreenState extends State<ClassesScreen> {
                           }
                           if (snapshot.hasData) {
                             List<Widget> classCards = [];
-                            classCards.add(
-                              Text(
-                                  "Currently tracking ${snapshot.data.length} classes."),
-                            );
+                            // classCards.add(
+                            //   Text(
+                            //       "Currently tracking ${snapshot.data.length} classes."),
+                            // );
+                            classesNum = snapshot.data.length;
                             for (var i = 0; i < snapshot.data.length; i++) {
                               if (snapshot.data[i]["valid"] == "true") {
                                 classCards.add(
@@ -274,7 +302,32 @@ class _ClassesScreenState extends State<ClassesScreen> {
                                 );
                               }
                             }
-                            return Column(children: classCards);
+                            return Column(
+                                children: <Widget>[
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            "Currently tracking ${snapshot.data.length} classes.",
+                                            style: TextStyle(
+                                              fontSize: kIsWeb ? 20 : 18,
+                                            ),
+                                          ),
+                                          IconButton(
+                                              icon: Icon(
+                                                Icons.refresh,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {});
+                                              }),
+                                        ],
+                                      ),
+                                      if (kIsWeb) SizedBox(height: 5),
+                                    ] +
+                                    classCards);
                           } else {
                             return Column(children: [
                               SizedBox(height: 20),

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:howdy_class_search/screens/schedule_screen.dart';
 
 import '../widgets/app_drawer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../screens/help_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/classes_screen.dart';
 import '../screens/auth_screen.dart';
 import '../models/globals.dart' as globals;
 
-class HelpScreen extends StatelessWidget {
-  static const routeName = "/help-screen";
+class ScheduleScreen extends StatelessWidget {
+  static const routeName = '/schedule-screen';
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class HelpScreen extends StatelessWidget {
       appBar: kIsWeb
           ? null
           : AppBar(
-              title: Text("Help"),
+              title: Text("Schedule"),
               flexibleSpace: Container(
                 decoration: BoxDecoration(
                   gradient: globals.tamuGradient,
@@ -71,7 +71,7 @@ class HelpScreen extends StatelessWidget {
                       Container(
                         width: 5,
                         height: 70,
-                        color: Theme.of(context).primaryColor,
+                        color: Colors.blue,
                       ),
                       Container(
                         width: 95,
@@ -79,12 +79,11 @@ class HelpScreen extends StatelessWidget {
                         child: IconButton(
                           icon: Icon(
                             Icons.calendar_today,
-                            color: Colors.white,
+                            color: Colors.blue,
                             size: 40,
                           ),
                           onPressed: () {
-                            Navigator.of(context)
-                                .pushReplacementNamed(ScheduleScreen.routeName);
+                            // Navigator.of(context).pushReplacementNamed(routeName)
                           },
                         ),
                       ),
@@ -121,7 +120,7 @@ class HelpScreen extends StatelessWidget {
                       Container(
                         width: 5,
                         height: 70,
-                        color: Colors.blue,
+                        color: Theme.of(context).primaryColor,
                       ),
                       Container(
                         width: 95,
@@ -129,11 +128,12 @@ class HelpScreen extends StatelessWidget {
                         child: IconButton(
                           icon: Icon(
                             Icons.help,
-                            color: Colors.blue,
+                            color: Colors.white,
                             size: 40,
                           ),
                           onPressed: () {
-                            //do nothing
+                            Navigator.of(context)
+                                .pushReplacementNamed(HelpScreen.routeName);
                           },
                         ),
                       ),
@@ -175,7 +175,8 @@ class HelpScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "Contact caleb.herpin@gmail.com for help.",
+                  " The schedule screen is currently under construction. Please check back later!",
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                       color: Theme.of(context).primaryColor,
                       fontSize: kIsWeb ? 24 : 18),
