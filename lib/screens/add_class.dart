@@ -27,7 +27,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
   double screenWidth = -1;
 
   void handleError(strJson) {
-    String msg = "Uknown error";
+    String msg = "Unknown error occured. Please try again.";
     try {
       msg = json.decode(strJson)["error"]["msg"];
     } catch (_) {}
@@ -38,15 +38,20 @@ class _AddClassScreenState extends State<AddClassScreen> {
         content: Text("ERROR: " + msg),
       ),
     );
-    return;
   }
 
   Future myPost(url, payload) async {
-    var response = await http.post(
-      url,
-      body: payload,
-      headers: {'Content-Type': 'application/json'},
-    );
+    var response;
+    try {
+      response = await http.post(
+        url,
+        body: payload,
+        headers: {'Content-Type': 'application/json'},
+      );
+    } catch (_) {
+      handleError(response.body);
+    }
+
     if (response.statusCode != 200) {
       print(response.body);
       handleError(response.body);
@@ -99,13 +104,13 @@ class _AddClassScreenState extends State<AddClassScreen> {
         onChanged: (value) async {
           final uid = FirebaseAuth.instance.currentUser.uid;
           final payload = jsonEncode({
-            'subj': _subjController.text.toString(),
-            'crse': _crseController.text.toString(),
+            'subj': _subjController.text.trim().toString(),
+            'crse': _crseController.text.trim().toString(),
             'uid': uid,
-            'query': value
+            'query': value.trim(),
           });
           print("General querey: " + payload);
-          //fullQuerySearch(payload);
+          fullQuerySearch(payload);
         },
       ),
     );
@@ -349,11 +354,11 @@ class _AddClassScreenState extends State<AddClassScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            getPadding("CRN", _crnController),
-            SizedBox(height: 15),
-            getPadding("Subject", _subjController),
-            SizedBox(height: 15),
-            getPadding("Crse", _crseController),
+            // getPadding("CRN", _crnController),
+            // SizedBox(height: 15),
+            // getPadding("Subject", _subjController),
+            // SizedBox(height: 15),
+            // getPadding("Crse", _crseController),
             SizedBox(height: 15),
             getPadding("General Search", _genSearchController),
             SizedBox(height: 15),

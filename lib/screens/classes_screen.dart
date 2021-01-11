@@ -33,6 +33,8 @@ class _ClassesScreenState extends State<ClassesScreen> {
     final uid = FirebaseAuth.instance.currentUser.uid;
 
     //final url = "http://cap1.herpin.net:5000/current?uid=$uid";
+    print(uid);
+
     final url = "${globals.urlStem}/current?uid=$uid";
     final classesJson = await http.get(url);
     final classes = json.decode(classesJson.body);
@@ -296,7 +298,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
                               } else {
                                 classCards.add(
                                   InvalidClassCard(
-                                    snapshot.data[i]["userCRN"].toString(),
+                                    snapshot.data[i]["CRN"].toString(),
                                     refresh,
                                   ),
                                 );
@@ -330,6 +332,14 @@ class _ClassesScreenState extends State<ClassesScreen> {
                                     classCards);
                           } else {
                             return Column(children: [
+                              IconButton(
+                                  icon: Icon(
+                                    Icons.refresh,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {});
+                                  }),
                               SizedBox(height: 20),
                               CircularProgressIndicator()
                             ]);
