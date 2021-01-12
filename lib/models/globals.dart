@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 var incrementable = 0;
-var urlStem = 'https://home.herpin.net';
-const Color primaryColor = /*Color(0xFF500000)*/ Colors.green;
+var urlStem = 'https://cap1.herpin.net';
+const Color primaryColor = Color(0xFF500000);
 const tamuGradient = LinearGradient(
   begin: Alignment.bottomCenter,
   end: Alignment.topCenter,

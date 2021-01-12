@@ -524,13 +524,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text("Enable Text Notifications"),
+                                      Text(
+                                          "Enable SMS Notification (Unavaliable)"),
                                       Switch(
-                                          value: _phoneNotifications,
+                                          value: false,
                                           onChanged: (value) {
-                                            _changesToSave = true;
-                                            _phoneNotifications = value;
-                                            setState(() {});
+                                            // _changesToSave = true;
+                                            // _phoneNotifications = value;
+                                            // setState(() {});
                                           })
                                     ],
                                   ),

@@ -73,7 +73,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
     }
     if (json.decode(payload)["subj"] == "" &&
         json.decode(payload)["crse"] == "" &&
-        json.decode(payload)["crn"] == "") {
+        json.decode(payload)["query"] == "") {
       setState(() {
         courseSuggestions = [];
       });
@@ -145,9 +145,26 @@ class _AddClassScreenState extends State<AddClassScreen> {
                   scale: 1.5,
                   child: Checkbox(
                     value: searchNonEmptyOnly,
-                    onChanged: (newValue) {
+                    onChanged: (newValue) async {
                       setState(() {
                         searchNonEmptyOnly = newValue;
+                      });
+                      final uid = FirebaseAuth.instance.currentUser.uid;
+                      final url2 = "${globals.urlStem}/fullQuery";
+                      final payload2 = jsonEncode({
+                        'subj': _subjController.text.toString(),
+                        'crse': _crseController.text.toString(),
+                        'uid': uid,
+                        'query': _genSearchController.text.trim().toString(),
+                        'open_required': searchNonEmptyOnly.toString(),
+                      });
+
+                      final response2 = await http.post(url2,
+                          headers: {'Content-Type': 'application/json'},
+                          body: payload2);
+                      //print(response.body);
+                      setState(() {
+                        courseSuggestions = json.decode(response2.body);
                       });
                     },
                   ),
@@ -267,8 +284,14 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                 final payload2 = jsonEncode({
                                   'subj': _subjController.text.toString(),
                                   'crse': _crseController.text.toString(),
-                                  'uid': uid
+                                  'uid': uid,
+                                  'query': _genSearchController.text
+                                      .trim()
+                                      .toString(),
+                                  'open_required':
+                                      searchNonEmptyOnly.toString(),
                                 });
+
                                 final response2 = await http.post(url2,
                                     headers: {
                                       'Content-Type': 'application/json'
@@ -276,7 +299,8 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                     body: payload2);
                                 //print(response.body);
                                 setState(() {
-                                  classDict = json.decode(response2.body);
+                                  courseSuggestions =
+                                      json.decode(response2.body);
                                 });
                                 //Navigator.of(context).pop();
                               },
@@ -304,18 +328,28 @@ class _AddClassScreenState extends State<AddClassScreen> {
                                   body: payload);
                               print(response.body);
 
+                              if (response.statusCode != 200) {
+                                handleError(response.body);
+                              }
+
                               final url2 = "${globals.urlStem}/fullQuery";
                               final payload2 = jsonEncode({
                                 'subj': _subjController.text.toString(),
                                 'crse': _crseController.text.toString(),
-                                'uid': uid
+                                'uid': uid,
+                                'query':
+                                    _genSearchController.text.trim().toString(),
+                                'open_required': searchNonEmptyOnly.toString(),
                               });
                               final response2 = await http.post(url2,
                                   headers: {'Content-Type': 'application/json'},
                                   body: payload2);
                               //print(response.body);
+                              if (response2.statusCode != 200) {
+                                handleError(response2.body);
+                              }
                               setState(() {
-                                classDict = json.decode(response2.body);
+                                courseSuggestions = json.decode(response2.body);
                               });
                               //Navigator.of(context).pop();
                             },
@@ -355,14 +389,17 @@ class _AddClassScreenState extends State<AddClassScreen> {
                             final payload2 = jsonEncode({
                               'subj': _subjController.text.toString(),
                               'crse': _crseController.text.toString(),
-                              'uid': uid
+                              'uid': uid,
+                              'query':
+                                  _genSearchController.text.trim().toString(),
+                              'open_required': searchNonEmptyOnly.toString(),
                             });
                             final response2 = await http.post(url2,
                                 headers: {'Content-Type': 'application/json'},
                                 body: payload2);
                             //print(response.body);
                             setState(() {
-                              classDict = json.decode(response2.body);
+                              courseSuggestions = json.decode(response2.body);
                             });
                             //Navigator.of(context).pop();
                           },
@@ -388,7 +425,10 @@ class _AddClassScreenState extends State<AddClassScreen> {
                           final payload2 = jsonEncode({
                             'subj': _subjController.text.toString(),
                             'crse': _crseController.text.toString(),
-                            'uid': uid
+                            'uid': uid,
+                            'query':
+                                _genSearchController.text.trim().toString(),
+                            'open_required': searchNonEmptyOnly.toString(),
                           });
                           final response2 = await http.post(url2,
                               headers: {'Content-Type': 'application/json'},
@@ -503,11 +543,12 @@ class _AddClassScreenState extends State<AddClassScreen> {
               itemCount: courseSuggestions.length,
               itemBuilder: (context, index) {
                 return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0,
-                      vertical: 10.0,
-                    ),
-                    child: getClassBox(courseSuggestions[index]));
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 10.0,
+                  ),
+                  child: getClassBox(courseSuggestions[index]),
+                );
               },
             ),
           ],
