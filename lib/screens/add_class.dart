@@ -23,6 +23,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
   final _crseController = TextEditingController();
   final _genSearchController = TextEditingController();
   var courseSuggestions = [];
+  bool searchNonEmptyOnly = false;
   Timer myTimer;
   String myStr;
   double screenWidth = -1;
@@ -96,35 +97,82 @@ class _AddClassScreenState extends State<AddClassScreen> {
   Padding getPadding(String title, final controller) {
     Padding rvalue = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: TextField(
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            gapPadding: 5.0,
-            borderRadius: const BorderRadius.all(
-              const Radius.circular(20.0),
-            ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      gapPadding: 5.0,
+                      borderRadius: const BorderRadius.all(
+                        const Radius.circular(20.0),
+                      ),
+                    ),
+                    labelText: title,
+                  ),
+                  controller: controller,
+                  onChanged: (value) async {
+                    if (value.trim().isEmpty) {
+                      myTimer.cancel();
+                      setState(() {
+                        courseSuggestions = [];
+                      });
+                    } else {
+                      final uid = FirebaseAuth.instance.currentUser.uid;
+                      final payload = jsonEncode({
+                        'subj': _subjController.text.trim().toString(),
+                        'crse': _crseController.text.trim().toString(),
+                        'uid': uid,
+                        'query': value.trim(),
+                        'open_required': searchNonEmptyOnly.toString(),
+                      });
+                      print("General querey: " + payload);
+                      fullQuerySearch(payload);
+                    }
+                  },
+                ),
+              ),
+              if (kIsWeb) SizedBox(width: 10),
+              if (kIsWeb)
+                Text(
+                  "Exclude Full Classes: ",
+                  style: TextStyle(fontSize: 20),
+                ),
+              if (kIsWeb)
+                Transform.scale(
+                  scale: 1.5,
+                  child: Checkbox(
+                    value: searchNonEmptyOnly,
+                    onChanged: (newValue) {
+                      setState(() {
+                        searchNonEmptyOnly = newValue;
+                      });
+                    },
+                  ),
+                )
+            ],
           ),
-          labelText: title,
-        ),
-        controller: controller,
-        onChanged: (value) async {
-          if (value.trim().isEmpty) {
-            myTimer.cancel();
-            setState(() {
-              courseSuggestions = [];
-            });
-          } else {
-            final uid = FirebaseAuth.instance.currentUser.uid;
-            final payload = jsonEncode({
-              'subj': _subjController.text.trim().toString(),
-              'crse': _crseController.text.trim().toString(),
-              'uid': uid,
-              'query': value.trim(),
-            });
-            print("General querey: " + payload);
-            fullQuerySearch(payload);
-          }
-        },
+          if (!kIsWeb)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Exclude Full Classes: ",
+                  style: TextStyle(fontSize: 16),
+                ),
+                Checkbox(
+                  value: searchNonEmptyOnly,
+                  onChanged: (newValue) {
+                    setState(() {
+                      searchNonEmptyOnly = newValue;
+                    });
+                  },
+                )
+              ],
+            )
+        ],
       ),
     );
     return rvalue;
@@ -396,7 +444,7 @@ class _AddClassScreenState extends State<AddClassScreen> {
             getPadding("Search Courses", _genSearchController),
             SizedBox(height: 10),
             Text(
-              "Search TAMU courses by Title, CRN, or Subject/Course. For example, you can search 'Chemistry', '27547', 'POLS 200', or 'PHYS' to find the relevant classes!",
+              'Search TAMU courses by Title, CRN, Instructor, or Subject/Course. For example, you can search "Chemistry", "27547", "Andrew Tripp", "POLS 200", or "PHYS" to find the relevant classes!',
               style: TextStyle(
                 fontSize: kIsWeb ? 18 : 14,
                 color: Colors.grey,
