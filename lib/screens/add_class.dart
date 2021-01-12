@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../models/globals.dart' as globals;
 import './auth_screen.dart';
@@ -47,14 +48,19 @@ class _AddClassScreenState extends State<AddClassScreen> {
         url,
         body: payload,
         headers: {'Content-Type': 'application/json'},
-      );
+      ).catchError((error) {
+        print("OMG ITS AN ERROR HOLY DUCK!");
+        handleError(error);
+      });
     } catch (_) {
       handleError(response.body);
+      return;
     }
 
     if (response.statusCode != 200) {
       print(response.body);
       handleError(response.body);
+      return;
     }
     return response;
   }
@@ -102,15 +108,22 @@ class _AddClassScreenState extends State<AddClassScreen> {
         ),
         controller: controller,
         onChanged: (value) async {
-          final uid = FirebaseAuth.instance.currentUser.uid;
-          final payload = jsonEncode({
-            'subj': _subjController.text.trim().toString(),
-            'crse': _crseController.text.trim().toString(),
-            'uid': uid,
-            'query': value.trim(),
-          });
-          print("General querey: " + payload);
-          fullQuerySearch(payload);
+          if (value.trim().isEmpty) {
+            myTimer.cancel();
+            setState(() {
+              courseSuggestions = [];
+            });
+          } else {
+            final uid = FirebaseAuth.instance.currentUser.uid;
+            final payload = jsonEncode({
+              'subj': _subjController.text.trim().toString(),
+              'crse': _crseController.text.trim().toString(),
+              'uid': uid,
+              'query': value.trim(),
+            });
+            print("General querey: " + payload);
+            fullQuerySearch(payload);
+          }
         },
       ),
     );
@@ -118,9 +131,22 @@ class _AddClassScreenState extends State<AddClassScreen> {
   }
 
   Container getClassBox(var classDict) {
+    var rem = int.parse(classDict["Rem"]);
+    Color statusColor;
+    if (rem < 1) {
+      statusColor = Colors.red;
+    } else if (rem < 6) {
+      statusColor = Colors.orange;
+    } else {
+      statusColor = Colors.green;
+    }
     Container rvalue = Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5), border: Border.all(width: 2)),
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(
+          width: 2,
+        ),
+      ),
       padding: EdgeInsets.all(10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -149,6 +175,13 @@ class _AddClassScreenState extends State<AddClassScreen> {
                 ],
               ),
               Text("CRN: " + classDict["CRN"]),
+              Text(
+                "${classDict["Rem"]} of ${classDict["Cap"]} spots remaining",
+                style: TextStyle(
+                  color: statusColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               Text("Instructor: " + classDict["Instructor"]),
             ]),
           ),
@@ -360,39 +393,48 @@ class _AddClassScreenState extends State<AddClassScreen> {
             // SizedBox(height: 15),
             // getPadding("Crse", _crseController),
             SizedBox(height: 15),
-            getPadding("General Search", _genSearchController),
-            SizedBox(height: 15),
-            RaisedButton.icon(
-              onPressed: () async {
-                final crn = _crnController.text.trim();
-
-                if (crn.length != 5) {
-                  _scaffoldKey.currentState.showSnackBar(SnackBar(
-                    backgroundColor: Theme.of(context).errorColor,
-                    content: Text("Invalid CRN. Please enter a valid CRN."),
-                  ));
-                  return;
-                }
-
-                final uid = FirebaseAuth.instance.currentUser.uid;
-                //const url = "https://cap1.herpin.net:5000/add";
-                final url = "${globals.urlStem}/add";
-                final payload = jsonEncode({'crn': crn, 'uid': uid});
-                final response = await myPost(url, payload);
-                Navigator.of(context).pop();
-              },
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
+            getPadding("Search Courses", _genSearchController),
+            SizedBox(height: 10),
+            Text(
+              "Search TAMU courses by Title, CRN, or Subject/Course. For example, you can search 'Chemistry', '27547', 'POLS 200', or 'PHYS' to find the relevant classes!",
+              style: TextStyle(
+                fontSize: kIsWeb ? 18 : 14,
+                color: Colors.grey,
               ),
-              label: Text(
-                "Add Class",
-                style: TextStyle(color: Colors.white),
-              ),
-              elevation: 0,
-              color: Theme.of(context).primaryColor,
-              //materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              textAlign: TextAlign.center,
             ),
+            SizedBox(height: 0),
+            // RaisedButton.icon(
+            //   onPressed: () async {
+            //     final crn = _crnController.text.trim();
+
+            //     if (crn.length != 5) {
+            //       _scaffoldKey.currentState.showSnackBar(SnackBar(
+            //         backgroundColor: Theme.of(context).errorColor,
+            //         content: Text("Invalid CRN. Please enter a valid CRN."),
+            //       ));
+            //       return;
+            //     }
+
+            //     final uid = FirebaseAuth.instance.currentUser.uid;
+            //     //const url = "https://cap1.herpin.net:5000/add";
+            //     final url = "${globals.urlStem}/add";
+            //     final payload = jsonEncode({'crn': crn, 'uid': uid});
+            //     final response = await myPost(url, payload);
+            //     Navigator.of(context).pop();
+            //   },
+            //   icon: Icon(
+            //     Icons.add,
+            //     color: Colors.white,
+            //   ),
+            //   label: Text(
+            //     "Add Class",
+            //     style: TextStyle(color: Colors.white),
+            //   ),
+            //   elevation: 0,
+            //   color: Theme.of(context).primaryColor,
+            //   //materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            // ),
             SizedBox(height: 15),
             if (courseSuggestions.isNotEmpty)
               Row(
@@ -400,7 +442,9 @@ class _AddClassScreenState extends State<AddClassScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 20.0),
-                    child: Text("${courseSuggestions.length} results found:"),
+                    child: courseSuggestions.length == 50
+                        ? Text("Showing first 50 results:")
+                        : Text("${courseSuggestions.length} results found:"),
                   ),
                 ],
               ),
