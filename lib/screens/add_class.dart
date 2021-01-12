@@ -181,9 +181,26 @@ class _AddClassScreenState extends State<AddClassScreen> {
                 ),
                 Checkbox(
                   value: searchNonEmptyOnly,
-                  onChanged: (newValue) {
+                  onChanged: (newValue) async {
                     setState(() {
                       searchNonEmptyOnly = newValue;
+                    });
+                    final uid = FirebaseAuth.instance.currentUser.uid;
+                    final url2 = "${globals.urlStem}/fullQuery";
+                    final payload2 = jsonEncode({
+                      'subj': _subjController.text.toString(),
+                      'crse': _crseController.text.toString(),
+                      'uid': uid,
+                      'query': _genSearchController.text.trim().toString(),
+                      'open_required': searchNonEmptyOnly.toString(),
+                    });
+
+                    final response2 = await http.post(url2,
+                        headers: {'Content-Type': 'application/json'},
+                        body: payload2);
+                    //print(response.body);
+                    setState(() {
+                      courseSuggestions = json.decode(response2.body);
                     });
                   },
                 )
